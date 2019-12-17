@@ -1,4 +1,4 @@
-﻿module Data
+﻿namespace FoodFile
 
 type Party = {
     Id: string;
@@ -36,16 +36,19 @@ type Entity = {
     Atoms: Atom list;
 }
 
-let AddAtomToEntity = fun (atom:Atom) (entity:Entity) ->
-    let atoms = entity.Atoms @ [atom]
-    {ID=entity.ID; Atoms=atoms}
 
-// Kann man jetzt transform und tracking gleichzeitig ablegen?
-let testatom =
-    {ID = "007"; Owners = [|{Id = "Leonard"}|]; Data = Transformation ({OutEntities = [|"123"; "26"|]}); Meta = {Timestamp = 29852389472L}}
+module Data = 
+    
+    let AddAtomToEntity = fun (atom:Atom) (entity:Entity) ->
+        let atoms = entity.Atoms @ [atom]
+        {ID=entity.ID; Atoms=atoms}
 
-let basisEntity =
-    {ID="QuickTest"; Atoms = []}
+    // Kann man jetzt transform und tracking gleichzeitig ablegen?
+    let testatom =
+        {ID = "007"; Owners = [|{Id = "Leonard"}|]; Data = Transformation ({OutEntities = [|"123"; "26"|]}); Meta = {Timestamp = 29852389472L}}
 
-let TestEntity =
-    AddAtomToEntity testatom basisEntity
+    let basisEntity =
+        {ID="QuickTest2"; Atoms = []}
+
+    let TestEntity =
+        AddAtomToEntity testatom basisEntity
