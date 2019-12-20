@@ -7,6 +7,7 @@ open Microsoft.AspNetCore.Mvc
 open Microsoft.Extensions.Configuration
 open Microsoft.Extensions.DependencyInjection
 open Microsoft.Extensions.Hosting
+open System
 
 module Startup =
     type Startup private () =
@@ -44,5 +45,6 @@ module Startup =
 
     [<EntryPoint>]
     let main args =
+        Elastic.ExecuteRead ()
         CreateHostBuilder(args).Build().Run()
         0
