@@ -7,9 +7,13 @@ open Microsoft.AspNetCore.Mvc
 open Microsoft.Extensions.Configuration
 open Microsoft.Extensions.DependencyInjection
 open Microsoft.Extensions.Hosting
+open Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer
 open System
 
+// SPA = Single Page Applications
+
 module Startup =
+
     type Startup private () =
         new (configuration: IConfiguration) as this =
             Startup() then
@@ -18,7 +22,9 @@ module Startup =
         // This method gets called by the runtime. Use this method to add services to the container.
         member this.ConfigureServices(services: IServiceCollection) =
             // Add framework services.
-            services.AddControllers() |> ignore
+            //services.AddControllers() |> ignore
+            services.AddControllersWithViews() |> ignore
+            services.AddSpaStaticFiles (fun configuration -> configuration.RootPath <- "ClientApp/build")
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         member this.Configure(app: IApplicationBuilder, env: IWebHostEnvironment) =
@@ -26,13 +32,21 @@ module Startup =
                 app.UseDeveloperExceptionPage() |> ignore
 
             app.UseHttpsRedirection() |> ignore
+            app.UseStaticFiles() |> ignore
+            app.UseSpaStaticFiles() |> ignore
             app.UseRouting() |> ignore
 
             app.UseAuthorization() |> ignore
 
             app.UseEndpoints(fun endpoints ->
-                endpoints.MapControllers() |> ignore
+                //endpoints.MapControllers() |> ignore
+                endpoints.MapControllerRoute ("default", "{controller}/{action=Index}/{id?}") |> ignore
                 ) |> ignore
+
+            app.UseSpa (fun spa ->
+                spa.Options.SourcePath <- "ClientApp"
+                if env.IsDevelopment() then spa.UseReactDevelopmentServer("start")
+                )
 
         member val Configuration : IConfiguration = null with get, set
 
