@@ -20,6 +20,7 @@
     <Compile Include="Model\Elastic.fs" />
     <Compile Include="Controllers\ElasticController.fs" />
     <Compile Include="Controllers\WeatherForecastController.fs" />
+    <Compile Include="Test\Testdata.fs" />
     <Compile Include="Startup.fs" />
   </ItemGroup>
 

@@ -59,6 +59,6 @@ module Startup =
 
     [<EntryPoint>]
     let main args =
-        Elastic.ExecuteRead ()
+        //Testdata.ExecuteWrite()
         CreateHostBuilder(args).Build().Run()
         0

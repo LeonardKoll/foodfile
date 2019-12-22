@@ -48,17 +48,3 @@ module Elastic =
         entityID
         |> ReadDocument
         |> fun doc -> doc.Atoms
-
-    // Just Testing
-    let ExecuteRead = fun () ->
-        startWith "E1"
-        |> switch ReadDocument
-        |> Convert.ToString
-        |> printf "Result: %s"
-
-    // Just Testing
-    let ExecuteWrite = fun () ->
-        startWith Data.TestEntity
-        |> switch WriteDocument
-        |> Convert.ToString
-        |> printf "Result: %s"

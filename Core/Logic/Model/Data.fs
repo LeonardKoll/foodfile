@@ -6,31 +6,44 @@ type Party = {
 
 type Location = {
     Name: string; // Später: Koordinaten, Identifier oder Adresse?
+    Coordinates: string
 }
 
 type TransformationInfo = {
-    OutEntities: string array
+    InEntities: string array;
+    Location: Location option;
 }
 
-type TrackingInfo = 
-    | Owner of Party
-    | Location of Location
+type TrackingInfo = {
+    Location: Location
+    }
 
-type MetaInfo = {
+type BuyingInfo = {
+    Seller : string;
+}
+
+type EntityDescription = {
+    Name: string
+    Certificates: string list option // Später: Liste signierter Zertifikate
+}
+
+type MetaContent = {
     Timestamp: int64
 }
 
-type AtomInfo = 
+type AtomContent = 
     | Transformation of TransformationInfo
     | Tracking of TrackingInfo
+    | Registration of BuyingInfo
+    | EntityDescription of EntityDescription
 
 type Atom = {
     ShortID: string; // Atom ID. Wird im DB-Dokument-Objekt zusätzlich als Key verwendet.
     EntityID: string;
     Version: int;
     Owners: Party array;
-    Data : AtomInfo;
-    Meta: MetaInfo;
+    Data : AtomContent;
+    Meta: MetaContent option;
 } with
     
     member this.LongID =
@@ -49,20 +62,3 @@ type Entity = {
             | Some(x) -> if x=atom.EntityID then result else None
             | None -> None
             | _ -> None) (Some this.Atoms.Head.EntityID) this.Atoms
-
-
-module Data = 
-    
-    let AddAtomToEntity = fun (atom:Atom) (entity:Entity) ->
-        let atoms = entity.Atoms @ [atom]
-        {Atoms=atoms}
-
-    // Kann man jetzt transform und tracking gleichzeitig ablegen?
-    let testatom =
-        {ShortID = "A1"; EntityID="E1"; Version=1; Owners = [|{Id = "Leonard"}|]; Data = Transformation ({OutEntities = [|"123"; "26"|]}); Meta = {Timestamp = 29852389472L}}
-
-    let basisEntity =
-        {Atoms = []}
-
-    let TestEntity =
-        AddAtomToEntity testatom basisEntity
