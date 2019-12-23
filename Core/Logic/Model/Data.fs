@@ -1,7 +1,7 @@
 ﻿namespace FoodFile
 
 type Party = {
-    Id: string;
+    ID: string;
 }
 
 type Location = {
