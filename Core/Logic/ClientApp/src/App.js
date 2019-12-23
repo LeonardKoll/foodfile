@@ -4,7 +4,7 @@ import { Layout } from './components/Layout';
 import { Home } from './components/Home';
 import { FetchData } from './components/FetchData';
 import { Counter } from './components/Counter';
-import EntityHistory from './components/EntityHistory';
+import Trace from './components/Trace';
 
 import './custom.css'
 
@@ -15,7 +15,7 @@ function App() {
         <Route exact path='/' component={Home} />
         <Route path='/counter' component={Counter} />
         <Route path='/fetch-data' component={FetchData} />
-        <Route path='/entity-history' component={EntityHistory} />
+        <Route path='/trace' component={Trace} />
       </Layout>
   )
 }

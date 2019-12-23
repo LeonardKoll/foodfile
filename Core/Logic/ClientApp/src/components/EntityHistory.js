@@ -26,17 +26,18 @@ const myTreeData = [
   },
 ];
 
-function EntityHistory() {
+function EntityHistory({searchterm}) {
 
   const [state, setState] = useState(
     <p>Waiting.</p>
   );
 
-  useEffect(() => {
-    axios.get('/api/elastic/ZW9FC617UW').then (response =>  {
+  if (searchterm.length == 10)
+  {
+    axios.get('/api/elastic/' + searchterm).then (response =>  {
       setState (JSON.stringify(response.data));
     });
-  }, [])
+  }
 
   return (
     <div>
