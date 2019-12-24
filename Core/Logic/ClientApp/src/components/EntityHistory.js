@@ -34,7 +34,7 @@ function EntityHistory({searchterm}) {
 
   if (searchterm.length == 10)
   {
-    axios.get('/api/elastic/' + searchterm).then (response =>  {
+    axios.get('/api/trace/' + searchterm).then (response =>  {
       setState (JSON.stringify(response.data));
     });
   }

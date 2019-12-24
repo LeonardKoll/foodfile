@@ -10,7 +10,7 @@ type Location = {
 }
 
 type TransformationInfo = {
-    InEntities: string array;
+    InEntities: string list;
     Location: Location option;
 }
 
@@ -41,7 +41,7 @@ type Atom = {
     ShortID: string; // Atom ID. Wird im DB-Dokument-Objekt zusätzlich als Key verwendet.
     EntityID: string;
     Version: int;
-    Owners: Party array;
+    Owners: Party list;
     Data : AtomContent;
     Meta: MetaContent option;
 } with

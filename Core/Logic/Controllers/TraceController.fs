@@ -8,12 +8,12 @@ open System
 
 [<ApiController>]
 [<Route("api/[controller]")>]
-type ElasticController () =
+type TraceController () =
     inherit ControllerBase()
 
     [<HttpGet("{id}")>]
-    member __.Get(id:string) : Entity =
-        Elastic.ReadDocument id
+    member __.Get(id:string) : Atom list =
+        Search.Search id
         // ToDo: Error Handling.
         // Note: Die Funktion kann evtl weg weil wir immer Atome aber nicht ganze Docs transferieren
 
@@ -23,7 +23,7 @@ type ElasticController () =
         |> Convert.ToString
         |> JObject.Parse
         |> fun parseResult -> parseResult.ToObject<Entity>()
-        |> Elastic.WriteDocument 
+        |> Elastic.WriteEntity 
         // ToDo: Nicht so nice hier ist, dass es nicht schon in der Signatur zu JToken oder JObject geparst wird.
         // ToDO: Error Handling.
         // Note: Die Funktion kann evtl weg weil wir immer Atome aber nicht ganze Docs transferieren

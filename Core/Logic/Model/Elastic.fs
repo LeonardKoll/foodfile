@@ -5,7 +5,7 @@ open Newtonsoft.Json
 open FSharp.Data
 open Newtonsoft.Json.Linq
 
-open Railway
+// The Elastic Module handels all interaction with the local Elastic instance.
 
 module Elastic =
 
@@ -18,7 +18,7 @@ module Elastic =
 
     
 
-    let WriteDocument = fun (entity:Entity) ->
+    let WriteEntity = fun (entity:Entity) ->
         match entity.ID with
         | None -> raise (System.ArgumentException("Entity empty or not consistent."))
         | Some(ID) -> 
@@ -28,12 +28,15 @@ module Elastic =
                 Http.RequestString ( Host + SearchIndex + "/_create/" + ID, httpMethod = "POST", headers = [ "Content-Type","application/json" ], body = TextRequest toSend)
 
 
-    let ReadDocument = fun id ->
+    let GetEntity = fun id ->
         "{\"query\": {\"ids\" : {\"values\" : [\"" + id + "\"]}}}"
         |> fun body -> 
             Http.RequestString ( Host + SearchIndex + "/_search", httpMethod = "POST", headers = [ "Content-Type","application/json" ], body = TextRequest body)
         |> JObject.Parse
-        |> fun (response:JObject) -> response.["hits"].["hits"].[0].["_source"].ToObject<Entity>()
+        |> fun (response:JObject) -> 
+            if response.["hits"].["total"].["value"].ToObject<int>() = 0 
+            then None
+            else Some (response.["hits"].["hits"].[0].["_source"].ToObject<Entity>())
    
 
    // Das sollte funktionierren, aber es retrievt ja aktuell nur in der eigenen Datenbank. Wir bräuchten dann als nächstes was, was übergreifend retreivt.
@@ -44,7 +47,9 @@ module Elastic =
         //====== Bevor wir uns im Tier 3 kümmern muss dann Authentication / Authroization her. Tier 2 muss dann auch entsprechend erweitert werden.
         // Tier 3: Funktionen/Systeme die Caching einstellungen realasieren. 
         // Tier 4: Funkrionen/Systeme, die Konfliktresolvierung (automatisch oder manuell) realisieren
-    let getAtoms = fun entityID ->
+    (* let GetAtoms = fun entityID ->
         entityID
         |> ReadDocument
-        |> fun doc -> doc.Atoms
+        |> function
+            | None -> None
+            | Some entity -> Some entity.Atoms *)

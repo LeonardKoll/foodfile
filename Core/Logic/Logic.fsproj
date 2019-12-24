@@ -16,9 +16,11 @@
 
   <ItemGroup>
     <Compile Include="Model\Data.fs" />
-    <Compile Include="Model\Railway.fs" />
+    <Compile Include="Model\ResultPipeline.fs" />
     <Compile Include="Model\Elastic.fs" />
-    <Compile Include="Controllers\ElasticController.fs" />
+    <Compile Include="Model\Network.fs" />
+    <Compile Include="Model\Search.fs" />
+    <Compile Include="Controllers\TraceController.fs" />
     <Compile Include="Controllers\WeatherForecastController.fs" />
     <Compile Include="Test\Testdata.fs" />
     <Compile Include="Startup.fs" />
