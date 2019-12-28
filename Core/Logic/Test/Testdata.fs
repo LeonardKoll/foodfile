@@ -5,26 +5,33 @@ open Elastic
 
 module Testdata = 
 
+    let freshfruitfarmers = {ID="IK7TEO"; Name=Some("FreshFruitFarmers"); API=Some("...")}
+    let sugarsilo = {ID="UC2NRQ"; Name=Some("SugarSilo SARL"); API=Some("...")}
+    let yummyjam = {ID="8X55N4"; Name=Some("YummyJam"); API=Some("...")}
+    
+    // ToDo: In Entities
+
+
     let erdbeeren:Entity = {
         Atoms = [
 
             // Entity Description
-            {ShortID = "GGZA1NF4B2"; EntityID="ZW9FC617UW"; Version=1; Owners = [{ID = "FreshFruitFarmers"}]; 
+            {AtomID = "24CF"; EntityID="8EALKMS2Q7"; ProducerID=""; Version=1; AdditionalOwnerIDs = []; 
             Data = EntityDescription ({Name="strawberry pallet" ; Certificates=None});
             Meta = None}
             
             // Harvesting
-            {ShortID = "2OMJWCL972"; EntityID="ZW9FC617UW"; Version=1; Owners = [{ID = "FreshFruitFarmers"}];
+            {AtomID = "E8RW"; EntityID="8EALKMS2Q7"; ProducerID=""; Version=1; AdditionalOwnerIDs = [];
             Data = Transformation ({InEntities = []; Location = Some({Name="Farm 3"; Coordinates="50.553291, 11.019047"})});
             Meta = Some({Timestamp = 1562167380L})}
 
             // Collecting
-            {ShortID = "NV390EAM9P"; EntityID="ZW9FC617UW"; Version=1; Owners = [{ID = "FreshFruitFarmers"}];
+            {AtomID = "NZEU"; EntityID="8EALKMS2Q7"; ProducerID=""; Version=1; AdditionalOwnerIDs = [];
             Data = Tracking ({Location = {Name="FreshFruitFarmers warehouse"; Coordinates="50.281290, 10.967620"}});
             Meta = None}
 
             // Shipping
-            {ShortID = "0SV6M9SN3I"; EntityID="ZW9FC617UW"; Version=1; Owners = [{ID = "FreshFruitFarmers"};{ID = "SugarSilo SARL"}];
+            {AtomID = "TTI5"; EntityID="8EALKMS2Q7"; ProducerID=""; Version=1; AdditionalOwnerIDs = [sugarsilo.ID];
             Data = Tracking ({Location = {Name="YummyJam production facilty"; Coordinates="51.590067, 8.1050100"}});
             Meta = Some({Timestamp = 1562227920L})}
     ]}
@@ -33,27 +40,28 @@ module Testdata =
         Atoms = [
 
             // Entity Description
-            {ShortID = "XY391R4AVL"; EntityID="HC0V3H5Y1R"; Version=1; Owners = [{ID = "SugarSilo SARL"}]; 
+            {AtomID = "LTWA"; EntityID="UGSESG22LL"; ProducerID=sugarsilo.ID; Version=1; AdditionalOwnerIDs = []; 
             Data = EntityDescription ({Name="sugar beet pallet" ; Certificates=None});
             Meta = None}
 
             // Harvesting
-            {ShortID = "5MEDIMBBCA"; EntityID="HC0V3H5Y1R"; Version=1; Owners = [{ID = "SugarSilo SARL"}];
+            {AtomID = "6EFZ"; EntityID="UGSESG22LL"; ProducerID=sugarsilo.ID; Version=1; AdditionalOwnerIDs = []; 
             Data = Transformation ({InEntities = []; Location = Some({Name="Field A4"; Coordinates="52.029034, 17.553938"})});
             Meta = Some({Timestamp = 1553698467L})}
 
         ]}
+ 
 
     let geliermittel = {
         Atoms = [
         
             // Entity Description
-            {ShortID = "7SMZ65O848"; EntityID="6TKH3NAIWX"; Version=1; Owners = [{ID = "SugarSilo SARL"}]; 
+            {AtomID = "I1O7"; EntityID="KVDBFFSAB4"; ProducerID=sugarsilo.ID; Version=1; AdditionalOwnerIDs = []; 
             Data = EntityDescription ({Name="gellant" ; Certificates=None});
             Meta = None}
 
             // Bought but no further information
-            {ShortID = "R6A2TDZN3W"; EntityID="6TKH3NAIWX"; Version=1; Owners = [{ID = "SugarSilo SARL"}]; 
+            {AtomID = "4LPO"; EntityID="KVDBFFSAB4"; ProducerID=sugarsilo.ID; Version=1; AdditionalOwnerIDs = []; 
             Data = Registration ({Seller="ChemicalKings Corp."});
             Meta = None}
         
@@ -64,17 +72,17 @@ module Testdata =
         Atoms = [
 
             // Entity Description
-            {ShortID = "J8EP46ZI6S"; EntityID="3ORECYN05A"; Version=1; Owners = [{ID = "SugarSilo SARL"}]; 
+            {AtomID = "EUGA"; EntityID="EIDDTPPDB2"; ProducerID=sugarsilo.ID; Version=1; AdditionalOwnerIDs = []; 
             Data = EntityDescription ({Name="preserving sugar pallet" ; Certificates=None});
             Meta = None}
 
             // Production
-            {ShortID = "GNA6NJ3B1B"; EntityID="3ORECYN05A"; Version=1; Owners = [{ID = "SugarSilo SARL"}];
-            Data = Transformation ({InEntities = ["6TKH3NAIWX"; "HC0V3H5Y1R"]; Location = None});
+            {AtomID = "BCWG"; EntityID="EIDDTPPDB2"; ProducerID=sugarsilo.ID; Version=1; AdditionalOwnerIDs = []; 
+            Data = Transformation ({InEntities = [zuckerrueben.CompleteID.Value; geliermittel.CompleteID.Value]; Location = None});
             Meta = Some({Timestamp = 1555303285L})}
 
             // Shipping
-            {ShortID = "J0MQJB2OPR"; EntityID="3ORECYN05A"; Version=1; Owners = [{ID = "SugarSilo SARL"};{ID = "YummyJam"}];
+            {AtomID = "NCDQ"; EntityID="EIDDTPPDB2"; ProducerID=sugarsilo.ID; Version=1; AdditionalOwnerIDs = [yummyjam.ID]; 
             Data = Tracking ({Location = {Name="YummyJam production facilty"; Coordinates="52.513072, 13.269270"}});
             Meta = Some({Timestamp = 1555598311L})}
         ]
@@ -84,39 +92,36 @@ module Testdata =
         Atoms = [
             
             // Entity Description
-            {ShortID = "JI4FY38XR1"; EntityID="L8ETBLF1AN"; Version=1; Owners = [{ID = "YummyJam"}]; 
+            {AtomID = "R1AL"; EntityID="6FGEMO4WX8"; ProducerID=yummyjam.ID; Version=1; AdditionalOwnerIDs = []; 
             Data = EntityDescription ({Name="strawberry jam jar" ; Certificates=None});
             Meta = None}
 
             // Production
-            {ShortID = "ZYQZ46WHOM"; EntityID="L8ETBLF1AN"; Version=1; Owners = [{ID = "YummyJam"}];
-            Data = Transformation ({InEntities = ["3ORECYN05A"; "ZW9FC617UW"]; Location = Some({Name="YummyJam production facilty"; Coordinates="52.513072, 13.269270"})});
+            {AtomID = "ZSOC"; EntityID="6FGEMO4WX8"; ProducerID=yummyjam.ID; Version=1; AdditionalOwnerIDs = []; 
+            Data = Transformation ({InEntities = [erdbeeren.CompleteID.Value; gelierzucker.CompleteID.Value]; Location = Some({Name="YummyJam production facilty"; Coordinates="52.513072, 13.269270"})});
             Meta = Some({Timestamp = 1568979091L})}
             
-        ]
+        ];
+        CompleteID=yummyjam.ID + "-" + "6FGEMO4WX8"
     }
 
     
     // Just Testing
     let ExecuteRead = fun () ->
-        "L8ETBLF1AN"
-        |> GetEntity
-        |> Convert.ToString
-        |> printf "Result: %s"
-
-
-    let WriteOne = fun entity ->
-        entity
-        |> WriteEntity
+        "6FGEMO4WX8"
+        |> GetEntityLocal
         |> Convert.ToString
         |> printf "Result: %s"
 
     // Just Testing
     let ExecuteWrite = fun () ->
-        WriteOne erdbeeren
-        WriteOne zuckerrueben
-        WriteOne geliermittel
-        WriteOne gelierzucker
-        WriteOne jam
+        WriteEntity erdbeeren               |> printf "Write Result: %s"
+        WriteEntity zuckerrueben            |> printf "Write Result: %s"
+        WriteEntity geliermittel            |> printf "Write Result: %s"
+        WriteEntity gelierzucker            |> printf "Write Result: %s"
+        WriteEntity jam                     |> printf "Write Result: %s"
+        WriteParticipant freshfruitfarmers  |> printf "Write Result: %s"
+        WriteParticipant sugarsilo          |> printf "Write Result: %s"
+        WriteParticipant yummyjam           |> printf "Write Result: %s"
 
     

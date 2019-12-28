@@ -32,7 +32,7 @@ function EntityHistory({searchterm}) {
     <p>Waiting.</p>
   );
 
-  if (searchterm.length == 10)
+  if (searchterm.length == 17)
   {
     axios.get('/api/trace/' + searchterm).then (response =>  {
       setState (JSON.stringify(response.data));
