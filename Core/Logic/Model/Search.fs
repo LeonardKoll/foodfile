@@ -1,115 +1,214 @@
 ﻿namespace FoodFile
 
 open Elastic
+open Members
 open FSharp.Data
 open Newtonsoft.Json.Linq
-open System
 
-(*
-    The Serch Module coordinates all entity-searches
-    accross the local Elastic-Instance as well as
-    accross the FoodFile Network.
-    It relies on the Elastic-Module for the local search
-    and on the Network-Module for distributed search
-*)
+module Search = 
 
-// Aktuell folgen wir in der Suche ausschließlich den Transforms. Für die lokale suche ist das okay weil wir ja zuverlässig alle Atome zu einer Entity gelifert bekommen die lokal da sind.
-// Für Remote reicht das aber nicht weil wir uns nicht darauf verlassen können von Producer alles zu bekommen was es zu wissen gibt.
-// Hier müssen wir daher nicht nur den Transforms folgen sondern auch den Trace spuren - aber immerhin nur upchain, es ist ja schließlich der Producer.
-// Wir können aber davon ausgehen, dass uns ein angefragter partner alles liefert was er zum atom weiß - unsere rekursion bezeiht sich daher nur auf das nachverfolgen der Spuren.
-// Defakto leifert uns der Partner die ergebnisse seiner Local search: Wir sprechen nämlich einfach dessen TraceController an.
+    let private ExtractFollowupEntities = fun (entities:Entity list) ->
+        entities
+        |> List.fold (fun (state:string list) entity ->
+            entity.InvolvedEntities @ state
+            |> List.distinct) []
 
-module Search =  
-    
-    let private ExtractCreation = fun (entity:Entity) ->
-        entity.Atoms
-        |> List.fold (fun (state:EntityCreation option) atom -> // Find and return the Creation Atom
-            match state with
-            | Some (_) -> state
-            | None -> 
-                match atom.Data with
-                | Creation ec -> Some(ec)
-                | _ -> None // This Atom is not a Transformation atom and hence not a Creation.
-            ) None
-    
-    // Tail-Recursive
-    let rec private MergeEntities = fun (entitiesA:Entity list) (entitiesB:Entity list) ->
-        match (entitiesA.IsEmpty, entitiesB.IsEmpty) with
-        | (true,true) -> []
-        | (true,false) -> entitiesB
-        | (false,true) -> entitiesA
-        | _ -> entitiesA
-            |> List.fold (fun (state:(Entity option * Entity list)) (currentElement:Entity) -> 
-                match (state, currentElement) with
-                | ((None, result), e) -> (None, e::result) // Entity already merged
-                | ((Some(e1), result), e2) -> // Entity not merged yet
-                    match (e1.CompleteID = e2.CompleteID, result) with
-                    | (true,result)  ->  // Merge
-                        let mergedEntity = {
-                            Atoms= List.distinctBy (fun (atom:Atom) -> atom.CompleteAtomID) (e1.Atoms@e2.Atoms) ; 
-                            CompleteID=e1.CompleteID }
-                        (None, mergedEntity::result)
-                    | (false,result) -> (Some(e1), e2::result) // IDs do not equal, do not merge
-                ) (Some(entitiesB.Head),[])
+    let private ExtractFollowupMembers = fun (entities:Entity list) ->
+        entities
+        |> List.fold (fun (state:string list) entity ->
+            entity.InvolvedMembers @ state
+            |> List.distinct) []
+
+    let rec private MergeEntities = fun (toMerge:Entity list) (basis:Entity list) ->
+        if toMerge.IsEmpty then basis else
+        toMerge.Head.MergeInto basis
+        |> MergeEntities toMerge.Tail
+
+    let GetEntitiesRemote = fun (memberAPI:string) (entityIDs:string list) ->
+        printfn "imput entities: %A" entityIDs
+        async {
+            
+            let url = 
+                (List.map ( fun id -> "id=" + id )
+                >> String.concat "&"
+                >> (fun arguments -> memberAPI + "Multiple?" + arguments)) entityIDs
+            
+            printfn "%s" url
+
+            let! result = Http.AsyncRequestString url //ToDo: Error Handling. Log errors somewhere end return empty list.
+            
+            printfn "result %s" (result.ToString())
+
+            return 
+                (JArray.Parse // Errors may also occur here.
+                >> (fun parsed -> parsed.ToObject<Entity list>())
+                >> List.filter( fun entity -> entity.Verify )) result
+        }
+
+    let rec private ExecuteLocalSearch (result:Entity list) (doneIDs:string list) (openIDs:string list) = 
+        if openIDs.IsEmpty then result else
+        let doneAfterIDs = doneIDs @ openIDs
+        openIDs
+        |> GetEntitiesLocal
+        |> function
+            | [] -> result
+            | entities -> 
+                ExtractFollowupEntities entities
+                // Remove those we already did and those already on our ToDo
+                |> List.filter (fun id -> not(List.exists (fun elem -> id=elem) doneAfterIDs))
+                |> ExecuteLocalSearch (result @ entities) doneAfterIDs
+        (*
+            The openIDs is necessary because in some cases, the search might be triggered
+            with multiple openIDs elements. During execution, we might find entities which 
+            are also on the open list, but we want to prevent to search twice.
+        *)
+
+    type CompletedRetreival = {
+        MemberID:string;
+        Member:Member option;
+        Entities: string list;
+    } with
+        
+        member this.MergeInto = fun (basis:CompletedRetreival list) ->
+            basis
+            |> List.fold (fun (state:(bool * CompletedRetreival list)) cCR ->
+                match state with
+                | (true, result) -> (true, cCR::result)
+                | (false, result) ->
+                    if this.MemberID=cCR.MemberID
+                    then 
+                        let mergedCR = ( 
+                            match this.Member with
+                            | None ->       {   MemberID=this.MemberID; 
+                                                Member=cCR.Member; 
+                                                Entities= List.distinct(this.Entities@cCR.Entities)}
+                            | Some(m) ->    {   MemberID=this.MemberID; 
+                                                Member=Some(m); 
+                                                Entities= List.distinct(this.Entities@cCR.Entities)}
+                            )
+                        (true, mergedCR::result)
+                    else
+                        (false, cCR::result)
+                ) (false,[]) // State: (isMerged, resultlist)
             |> function
-                | (Some(entity), result) -> MergeEntities (entity::result) (entitiesB.Tail) // Entity with that ID was not present in A, so append now.
-                | (None, result) -> MergeEntities result (entitiesB.Tail) // Merge was successful
+                | (true, result) -> result          // CR existed already, information merged :)
+                | (false, result) -> this::result   // CR did not exist in list. Add now.
+            
+    let rec private MergeCRs = fun (toMerge:CompletedRetreival list) (basis:CompletedRetreival list) ->
+        if toMerge.IsEmpty then basis else
+        toMerge.Head.MergeInto basis
+        |> MergeCRs toMerge.Tail 
 
-    let GetEntityRemote = fun (producerID:string) (entityID:string) ->
-        GetParticipantLocal producerID
+    let private FillCRsAPIs = fun (crs:CompletedRetreival list) ->
+        crs
+        |> List.filter ( fun cr -> cr.Member=None )
+        |> List.map ( fun ct -> ct.MemberID )
+        |> GetMembers
+        |> List.map ( fun (m) -> {MemberID=m.ID; Member=Some(m); Entities=[]} )
+        |> MergeCRs crs
+
+    let rec private ExecuteCompleteSearch = fun (result:Entity list) (crs: CompletedRetreival list ) (allIDs:string list) ->
+             
+        printfn "allIDs: %A" allIDs
+        printfn "doneIDs: %A" crs
+
+        let cleanedCRS = 
+            (FillCRsAPIs
+            >> List.filter ( fun (cr:CompletedRetreival) -> not ((cr.Member=None) || cr.Member.Value.API=None) )) crs
+        
+        cleanedCRS
+        |> List.map ( fun (cr) ->
+            async {
+                
+                // Compute ToDos for this Participant
+                let todoIDs = 
+                    List.filter (fun id -> not(List.exists (fun doneID -> id=doneID) cr.Entities) ) allIDs
+
+                printfn "todoIDs: %A" todoIDs
+
+                // Execute request Async
+                let! entities = GetEntitiesRemote cr.Member.Value.API.Value todoIDs
+                // On method call, MemberURL will always be Some bc we cleaned the CRS list before this call.
+
+                return (cr.MemberID, entities)
+            })
+        // Execute
+        |> (Async.Parallel >> Async.RunSynchronously)
+        // Merge Data
+        |> Array.fold ( fun (searchAgain, mergedE, mergedCRS, mergedAll) (source, entities) ->
+            
+            let followupE = 
+                (ExtractFollowupEntities
+                >> List.filter (fun id -> 
+                    not (List.exists (fun elem -> id=elem) allIDs)) ) entities
+
+            let followupP = 
+                (ExtractFollowupMembers  
+                >> List.filter (fun foundP -> 
+                    not (List.exists (fun (cr:CompletedRetreival) -> foundP=cr.MemberID) cleanedCRS)) ) entities
+            
+            let searchAgain_new =
+                not (followupP.IsEmpty && followupE.IsEmpty)
+
+            let mergedE_new =
+                MergeEntities entities mergedE
+
+            let mergedCRS_new = 
+                (List.map ( fun pID -> {MemberID=pID; Member=None; Entities=[]})
+                >> MergeCRs [{MemberID=source; Member=None; Entities=(allIDs@followupE)}]
+                >> MergeCRs mergedCRS) followupP
+            (*
+                In order to merge the Done-Lists we need to
+                - extract the participants resulting from the new entities
+                - add those participants to the list of CRs
+                - store, that the current participant completed all ids of the current search
+                    AND all IDs of the entities in the reply.
+                    Note, that the current participant is already in the doneIDs
+            *)
+
+            let mergedAll_new =
+                mergedAll @ followupE //already distinct
+
+            (searchAgain_new, mergedE_new, mergedCRS_new, mergedAll_new)
+
+            ) (false, result, crs, allIDs)
         |> function
-            | Some(producer) ->
-            match producer.API with
-                | Some(url) -> 
-                    url + entityID 
-                    |> (Http.RequestString >> JObject.Parse)
-                    |> fun parsed -> 
-                        parsed.ToObject<Entity list>()
-                        |> List.filter( fun (elem:Entity) -> if (Types.VerifyEntity elem)=None then false else true)
-                    // auf den eingegangenen Atomen sollten wir dann eventuell nochmal unsere Lokale Suche ausführen um eventuell unnötig erhaltene Atome Entities) rauszufiltern. (?)
-                    // Wir machen nämlich sonst nochmal ein branching auf den erhaltenen entites und auf die art und weise kann man das ding defakto abschiessen.
-                | None -> raise (System.ArgumentException ("Entity producer does not have a lookup API."))
-            | None -> raise (System.ArgumentException ("Entity producer unknown."))
+            | (false, mergedE, _, _) -> mergedE
+            | (true, mergedE, mergedDone, mergedAll) -> ExecuteCompleteSearch mergedE mergedDone mergedAll
+        (*
+            doneIDs has the same purpose as in ExecuteSearchLocal. However, it is by participant here: (participant-ID, participant-URL, [done Entities])
+            We do not maintain openIDs when we go down recursively but allIDs.
+            That's because participants might be added in subsequent searches and we want to ask them for all the entities.
+        
+            We do not have a public SearchRemote because ExecuteSearchRemote follows a local search
+            whenever the Search function is called and it needs preperation since it needs at least one participant URL to start with.
 
-    // Collect all Atoms for this entity and entities consumed throughout the production process (recursively)
-    // Tail-Recursive
-    let rec private RecSearchLocal (result:Entity list) (entityIDs:string list) =
-        if entityIDs.Length=0 then result else 
-        entityIDs.Head
-        |> GetEntityLocal
-        |> function
-            | None -> RecSearchLocal result entityIDs.Tail // No IDs left to search for. Return what we have so far / continue with other entities
-            | Some entity ->
-                ExtractCreation entity
-                |> function
-                    | None -> RecSearchLocal (entity::result) entityIDs.Tail // There is no Creation for this Atom. Thats appearently incomplete data - return what we have so far / continue with other entities
-                    | Some ec -> RecSearchLocal (entity::result) (entityIDs.Tail @ ec.InEntities) // Add the in-entities of the creation to the search. List might be empty but that's fine.
-    
-    // Tail-Recursive
-    let rec private RecSearchRemote (result:Entity list) (entityIDs:string list) =
-        if entityIDs.Length=0 then result else 
-        entityIDs.Head.Split [|'-'|]
-        |> function
-            | [|producerID; entityID|] -> 
-                let entities = GetEntityRemote producerID entityID
-                // Find the transformation Info Atoms of all Entities and Extract the In-Entity IDs
-                entities
-                |> List.fold (fun (state:string list) entity ->
-                    ExtractCreation entity
-                    |> function
-                    | Some (ec) -> state @ ec.InEntities
-                    | None -> state
-                    ) []
-                |> fun inEntityIDs -> RecSearchRemote (MergeEntities entities result) (entityIDs @ inEntityIDs) // Trigger next search
-            | _ -> RecSearchRemote result entityIDs.Tail // Skip this ID (its invalid) and continue
+            Note:A RemoteSearch always comprises a local search as long as we are among the participant URLs
+            We do not exeplicitly execute a local search between the remote-searches: If the entities indicate that we might now something,
+            we ourselves will be in the participantURLs and execute a request to our own URL. That's perfectly fine since this will never hold
+            the process up - a localhost request can be expected to be the fastest.
 
-    let SearchRemote = fun entityID -> RecSearchRemote [] [entityID]
-    
-    let SearchLocal = fun entityID -> RecSearchLocal [] [entityID]
+            ToDo: As written right now here, (among other things) it will never bottom out if a malious participant keeps 
+            adding entities or other participants.
+        *)
 
-    let Search = fun entityID ->
-        let localEntities = SearchLocal entityID
-        localEntities
-        |> List.map (fun (entity:Entity) -> entity.CompleteID)
-        |> RecSearchRemote []
-        |> MergeEntities localEntities
+    let LocalSearch = ExecuteLocalSearch [] []
+
+    let CompleteSearch = fun (memberID:string option) (entityIDs:string list) ->
+        match (memberID, thisInstance) with
+        | (None, None) -> []
+        | (None, Some ti ) ->
+            ExecuteCompleteSearch [] [
+                {MemberID=ti.ID; Member=Some(ti); Entities=[]}
+            ] entityIDs
+        | (Some pID, None) ->
+            ExecuteCompleteSearch [] [
+                {MemberID=pID; Member=None; Entities=[]}
+            ] entityIDs
+        | (Some pID, Some ti) ->
+            ExecuteCompleteSearch [] [
+                {MemberID=ti.ID; Member=Some(ti); Entities=[]};
+                {MemberID=pID; Member=None; Entities=[]}
+            ] entityIDs
+
+   

@@ -4,9 +4,11 @@ import EntityHistory from './EntityHistory';
 
 function Trace()
 {
-    const [searchterm, setSearchterm] = useState("init")
+    const [searchterm, setSearchterm] = useState("")
 
-    return (
+
+
+    return (        
         <div>
             <TraceSearch setSearchterm = {setSearchterm}/>
             <EntityHistory searchterm = {searchterm}/>

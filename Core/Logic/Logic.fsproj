@@ -15,12 +15,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Include="Model\Data.fs" />
-    <Compile Include="Model\ResultPipeline.fs" />
+    <Compile Include="Model\Types.fs" />
+    <Compile Include="Model\Members.fs" />
     <Compile Include="Model\Elastic.fs" />
-    <Compile Include="Model\Network.fs" />
     <Compile Include="Model\Search.fs" />
-    <Compile Include="Controllers\TraceController.fs" />
+    <Compile Include="Controllers\LocalController.fs" />
+    <Compile Include="Controllers\GlobalController.fs" />
     <Compile Include="Controllers\WeatherForecastController.fs" />
     <Compile Include="Test\Testdata.fs" />
     <Compile Include="Startup.fs" />

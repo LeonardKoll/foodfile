@@ -1,48 +1,27 @@
 ﻿import React, {useState, useEffect} from 'react';
-import Tree from 'react-d3-tree';
+import EntityTree from "./EntityTree"
 const axios = require('axios');
  
-const myTreeData = [
-  {
-    name: 'Top Level',
-    attributes: {
-      keyA: 'val A',
-      keyB: 'val B',
-      keyC: 'val C',
-    },
-    children: [
-      {
-        name: 'Level 2: A',
-        attributes: {
-          keyA: 'val A',
-          keyB: 'val B',
-          keyC: 'val C',
-        },
-      },
-      {
-        name: 'Level 2: B',
-      },
-    ],
-  },
-];
 
 function EntityHistory({searchterm}) {
 
-  const [state, setState] = useState(
-    <p>Waiting.</p>
-  );
+  const [state, setState] = useState({
+    Entities:[],
+    Members:[]
+  });
 
-  if (searchterm.length == 17)
-  {
-    axios.get('/api/trace/' + searchterm).then (response =>  {
-      setState (JSON.stringify(response.data));
-    });
-  }
+  useEffect(() => {
+    if (searchterm.length == 10)
+    {
+      axios.get('/api/global/' + searchterm).then (response =>  {
+        setState (response.data);
+      });
+    }
+  }, [searchterm]);
 
   return (
     <div>
-      {state}
-      <Tree data={myTreeData} />
+      <EntityTree entities={state.Entities} members={state.Members} rootID={searchterm} />
     </div>
   )
 }
