@@ -15,7 +15,7 @@ module Testdata =
 
             // Entity Description
             {AtomID = "24CF"; EntityID="8EALKMS2Q7"; Version=1; 
-            Information = EntityDescription ({Name="Strawberry Pallet" ; Certificates=[]});
+            Information = Description ({Name="Strawberry Pallet" ; Certificates=[]});
             Signatures=[]}
             
             // Harvesting
@@ -50,7 +50,7 @@ module Testdata =
 
             // Entity Description
             {AtomID = "LTWA"; EntityID="UGSESG22LL"; Version=1; 
-            Information = EntityDescription ({Name="Sugar Beet Pallet" ; Certificates=[]});
+            Information = Description ({Name="Sugar Beet Pallet" ; Certificates=[]});
             Signatures= []}
 
             // Harvesting
@@ -71,7 +71,7 @@ module Testdata =
         
             // Entity Description
             {AtomID = "I1O7"; EntityID="KVDBFFSAB4"; Version=1; 
-            Information = EntityDescription ({Name="Gellant" ; Certificates=[]});
+            Information = Description ({Name="Gellant" ; Certificates=[]});
             Signatures= []}
 
             // Bought but no further information
@@ -85,7 +85,7 @@ module Testdata =
 
             // Entity Description
             {AtomID = "EUGA"; EntityID="EIDDTPPDB2"; Version=1; 
-            Information = EntityDescription ({Name="Preserving Sugar Pallet" ; Certificates=[]});
+            Information = Description ({Name="Preserving Sugar Pallet" ; Certificates=[]});
             Signatures= []}
 
             // Production
@@ -112,7 +112,7 @@ module Testdata =
             
             // Entity Description
             {AtomID = "R1AL"; EntityID="6FGEMO4WX8"; Version=1; 
-            Information = EntityDescription ({Name="Strawberry Jam Jar" ; Certificates=[]});
+            Information = Description ({Name="Strawberry Jam Jar" ; Certificates=[]});
             Signatures= []}
 
             // Production

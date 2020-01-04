@@ -40,11 +40,22 @@ type EntityDestruction = {
     Responsible: string option
 }
 
+type ChainDirection = 
+    | Downchain
+    | Upchain
+    | Bidirectional
+
+type EntityInvolvement = {
+    Member: string;
+    Direction: ChainDirection option;
+}
+
 type AtomInformation = 
     | Creation of EntityCreation
     | Destruction of EntityDestruction
     | Transfer of EntityTransfer
-    | EntityDescription of EntityDescription
+    | Description of EntityDescription
+    | Involvement of EntityInvolvement
 
 type Signature = {
     Signer:string; // Member ID
@@ -94,6 +105,7 @@ type Entity = {
                 List.map (fun signature -> signature.Signer) atom.Signatures
 
             match atom.Information with
+            | Involvement x ->  x.Member::state
             | Creation x ->     match x.Responsible with Some id -> id::state | None -> state
             | Destruction x ->  match x.Responsible with Some id -> id::state | None -> state
             | Transfer x ->     match x.Responsible with Some id -> id::state | None -> state
