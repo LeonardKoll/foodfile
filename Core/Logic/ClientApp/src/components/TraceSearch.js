@@ -8,11 +8,11 @@ function TraceSearch ({setSearchterm})
             <div>
             <form class="form-inline">
             <label>Your trace code:</label>
-            <input type="text" name="search" class="form-control border-0" placeholder="8X55N4-6FGEMO4WX8" onChange={e => setSearchterm(e.target.value)}/>
+            <input type="text" name="search" class="form-control border-0 shadow-none" placeholder="8X55N4-6FGEMO4WX8" onChange={e => setSearchterm(e.target.value)}/>
             </form>
             </div>
 
-            <label>Please indicate whether you are interested in</label>
+            <label class="mb-0">Please indicate whether you are interested in</label>
 
             <div class="form-check ml-4">
             <input class="form-check-input" type="radio" value="option2" checked="checked"/>

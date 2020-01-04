@@ -3,7 +3,7 @@ import TraceSearch from './TraceSearch';
 import EntityTree from "./EntityTree"
 import axios from 'axios';
 
-export function Trace()
+function Trace()
 {
     const [searchterm, setSearchterm] = useState("")
     const [searchresult, setSearchresult] = useState({
@@ -33,3 +33,5 @@ export function Trace()
         </div>
     );
 }
+
+export default Trace;
