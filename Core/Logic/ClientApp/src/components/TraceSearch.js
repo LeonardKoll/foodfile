@@ -3,9 +3,38 @@ import React, {useState, useEffect} from 'react';
 function TraceSearch ({setSearchterm})
 {
     return (
-        <form>
-            <input type="text" name="search" onChange={e => setSearchterm(e.target.value)}/>
-        </form>
+        <div class="form-group">
+            
+            <p>
+
+                <div>
+                <form class="form-inline">
+                <label>Your trace code:</label>
+                <input type="text" name="search" class="form-control border-0" placeholder="8X55N4-6FGEMO4WX8" onChange={e => setSearchterm(e.target.value)}/>
+                </form>
+                </div>
+
+                <label>Please indicate whether you are interested in</label>
+
+                <div class="form-check ml-4">
+                <input class="form-check-input" type="radio" value="option2" checked="checked"/>
+                <label class="form-check-label">the origin of this item</label>
+                </div>
+
+                <div class="form-check ml-4 disabled">
+                <input class="form-check-input" type="radio" value="option3" disabled />
+                <label class="form-check-label">the usage of this item</label>
+                </div>
+            
+            </p>
+
+            <p>
+                FoodFile starts your retrival automatically as soon as you entered a valid trace code and opted for a search type.
+                The trace code should have the form indicated above with the first six digits being optional.
+                Please note that collecting data from other members of the FoodFile network takes a few moments.
+            </p>
+
+        </div>
     );
 }
 

@@ -20,8 +20,9 @@ function Trace()
         }
     }, [searchterm]);
 
-    return (        
+    return (       
         <div>
+            <h1>Trace</h1>
             <TraceSearch setSearchterm = {setSearchterm}/>
             <EntityTree entities={searchresult.Entities} members={searchresult.Members} rootID={searchterm} />
         </div>
