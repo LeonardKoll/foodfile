@@ -27,12 +27,12 @@ function generateHierarchy (entities, members, rootID) {
             // Sort Atoms inside Entity to have the latest first.
             atoms.sort(function(atomA, atomB){return atomB.Version - atomA.Version});
 
-            // Find EntityDescription to get the Name
+            //  to get the Name
             var entityName = rootID;
             for (var i=0; i<atoms.length; i++)
             {
                 var data = atoms[i].Information;
-                if (data.Case == "EntityDescription")
+                if (data.Case == "Description")
                 {
                     entityName = data.Fields[0].Name;
                     break;

@@ -21,7 +21,6 @@
     <Compile Include="Model\Search.fs" />
     <Compile Include="Controllers\LocalController.fs" />
     <Compile Include="Controllers\GlobalController.fs" />
-    <Compile Include="Controllers\WeatherForecastController.fs" />
     <Compile Include="Test\Testdata.fs" />
     <Compile Include="Startup.fs" />
   </ItemGroup>
