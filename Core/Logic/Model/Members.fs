@@ -27,25 +27,11 @@ module Members =
     // This instance can also be pure Trace. Then we do not have a participant ID.
     let thisInstance = Some({ID="2VIJP2"; Name=Some("RealRetail"); API=Some("https://localhost:5001/api/local/")})
 
-    let ExtractMembers = fun (entities:Entity list) ->
+    let ExtractMemberIDs = fun (entities:Entity list) ->
         entities
-        |> List.fold ( fun (stateA:string list) entity -> 
-            entity.Atoms
-            |> List.fold (fun (stateB:string list) atom ->
-            
-                let mA = match atom.Information with
-                    | Creation x -> Some(x.Responsible)
-                    | Transfer x -> Some(x.Responsible)
-                    | _ -> None
-                
-                let mB = 
-                    List.map ( fun c -> c.Signer) atom.Signatures
+        |> List.fold (fun (state:string list) entity ->
+            entity.InvolvedMembers @ state
+            |> List.distinct) []
 
-                match mA with
-                | Some (Some m) -> m::(mB@stateB)
-                | _             -> mB@stateB
-
-                ) stateA
-            ) []
-        |> List.distinct
-        |> GetMembers
+    let ExtractMembers = 
+        ExtractMemberIDs >> GetMembers

@@ -13,12 +13,6 @@ module Search =
             entity.InvolvedEntities @ state
             |> List.distinct) []
 
-    let private ExtractFollowupMembers = fun (entities:Entity list) ->
-        entities
-        |> List.fold (fun (state:string list) entity ->
-            entity.InvolvedMembers @ state
-            |> List.distinct) []
-
     let rec private MergeEntities = fun (toMerge:Entity list) (basis:Entity list) ->
         if toMerge.IsEmpty then basis else
         toMerge.Head.MergeInto basis
@@ -143,7 +137,7 @@ module Search =
                     not (List.exists (fun elem -> id=elem) allIDs)) ) entities
 
             let followupP = 
-                (ExtractFollowupMembers  
+                (ExtractMemberIDs  
                 >> List.filter (fun foundP -> 
                     not (List.exists (fun (cr:CompletedRetreival) -> foundP=cr.MemberID) cleanedCRS)) ) entities
             

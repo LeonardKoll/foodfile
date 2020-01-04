@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 
-export class FetchData extends Component {
-  static displayName = FetchData.name;
+export class Membership extends Component {
+  //static displayName = FetchData.name;
 
   constructor(props) {
     super(props);
