@@ -34,11 +34,15 @@ module Elastic =
             | 0 -> None
             | _ -> Some(response.SelectTokens "hits.hits.._source")
 
+    let private DeleteByID = fun (index:string) (id:string) ->
+        Http.RequestString (    Host + index + "/_doc/" + id, 
+                                httpMethod = "DELETE")
+
     let private WriteById = fun (index:string) (id:string) (toWrite:'a) ->
         toWrite
         |> JsonConvert.SerializeObject
         |> fun toSend -> 
-            Http.RequestString ( Host + index + "/_create/" + id, httpMethod = "POST", headers = [ "Content-Type","application/json" ], body = TextRequest toSend)
+            Http.RequestString ( Host + index + "/_doc/" + id, httpMethod = "Put", headers = [ "Content-Type","application/json" ], body = TextRequest toSend)
    
     let GetEntitiesLocal = fun (entityIDs:string list) ->
         entityIDs
@@ -51,13 +55,26 @@ module Elastic =
                         let entity = entityJson.ToObject<Entity>()
                         if entity.Verify then entity::state else state
                     ) []
+
+    let GetEntityLocal = fun (entityID:string) ->
+        [entityID]
+        |> GetByIDs EntityIndex
+        |> function
+            | None -> None
+            | Some(jTokenEnum) ->
+                jTokenEnum
+                |> Seq.tryExactlyOne
+                |> function
+                    | None -> None
+                    | Some (entityJson) -> 
+                        let entity = entityJson.ToObject<Entity>()
+                        if entity.Verify then Some(entity) else None
             
     let WriteEntity = fun (entity:Entity) ->
         match entity.Verify with
         | false -> raise (System.ArgumentException("Entity empty or not consistent."))
         | true -> WriteById EntityIndex entity.ID entity
-
-            
+        
 
    // Das sollte funktionierren, aber es retrievt ja aktuell nur in der eigenen Datenbank. Wir bräuchten dann als nächstes was, was übergreifend retreivt.
    // Und wir brauchen getAtoms entityID shortID version bzw getAtoms LongID und halt auch nur entityID shortID, sodass man alle Versionen des Atoms bekommt.
