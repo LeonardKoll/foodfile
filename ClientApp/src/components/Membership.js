@@ -40,7 +40,7 @@ export class Membership extends Component {
   render() {
     let contents = this.state.loading
       ? <p><em>Loading...</em></p>
-      : FetchData.renderForecastsTable(this.state.forecasts);
+      : <p><em>Loading...</em></p>;
 
     return (
       <div>
