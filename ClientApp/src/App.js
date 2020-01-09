@@ -5,6 +5,7 @@ import { Home } from './components/Home';
 import { Membership } from './components/Membership';
 import { Developers } from './components/Developers';
 import { Capture } from './components/Capture';
+import { Legal } from './components/Legal'
 import Trace from './components/Trace';
 
 import './custom.css'
@@ -18,6 +19,7 @@ function App() {
         <Route path='/membership' component={Membership} />
         <Route path='/trace' component={Trace} />
         <Route path='/capture' component={Capture} />
+        <Route path='/legal' component={Legal} />
       </Layout>
   )
 }

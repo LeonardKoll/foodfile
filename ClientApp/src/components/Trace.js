@@ -22,10 +22,11 @@ function Trace()
 
     return (       
         <div>
-            <h1 class="mb-3">Trace</h1>
+            <img className="img-fluid mb-5" src="/img/trace_cover.jpg"></img>
+            <h1 className="mb-3">Trace</h1>
             <p>
                 FoodFile starts your retrival automatically as soon as you entered a valid trace code and opted for a search type.
-                The trace code should have the form indicated above with the first six digits being optional.
+                The trace code should have the form indicated below with the first six digits being optional.
                 Please note that collecting data from other members of the FoodFile network takes a few moments.
             </p>
             <TraceSearch setSearchterm = {setSearchterm}/>

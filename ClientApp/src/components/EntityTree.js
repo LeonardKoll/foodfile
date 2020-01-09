@@ -16,6 +16,24 @@ function newHierarchyItem (name, member, location, time)
     }    
 }
 
+function prepareAtomlist (atoms)
+{
+    // Sort Atoms inside Entity to have the latest first.
+    atoms.sort(function(atomA, atomB){return atomB.Version - atomA.Version});
+
+    // Remove Deleted
+    var i=0
+    while (i<atoms.length)
+    {
+        if (atoms[i].Information.Case == "Deleted")
+        {
+            atoms = atoms.filter( atom => atom.AtomID!=atoms[i].AtomID )
+        }
+        else i++;
+    }
+
+}
+
 function generateHierarchy (entities, members, rootID) {
 
     for (var i=0; i<entities.length; i++)
@@ -23,9 +41,7 @@ function generateHierarchy (entities, members, rootID) {
         if (entities[i].ID === rootID)
         {
             var atoms = entities[i].Atoms;
-
-            // Sort Atoms inside Entity to have the latest first.
-            atoms.sort(function(atomA, atomB){return atomB.Version - atomA.Version});
+            prepareAtomlist(atoms);
 
             //  to get the Name
             var entityName = rootID;
@@ -215,7 +231,7 @@ function appendTreeSVG (entities, members, rootID, containerRef)
 
 function EntityTree({entities, members, rootID})
 {
-    const containerRef = useRef(null);;
+    const containerRef = useRef(null);
 
     useEffect(() => {
 

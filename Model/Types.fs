@@ -35,19 +35,15 @@ type EntityTransfer = {
     Responsible: string option;
 }
 
-type DestructionReason = Consumed | Lost | Wasted
+type DestructionReason = Consumed | Lost | Wasted | Unspecified
 
 type EntityDestruction = {
-    Reason: DestructionReason option
+    Reason: DestructionReason
     Location: Location option
     Responsible: string option
 }
 
-type ChainDirection = 
-    | Downchain
-    | Upchain
-    | Bidirectional
-    | Unspecified
+type ChainDirection =  Downchain | Upchain | Bidirectional | Unspecified
 
 type EntityInvolvement = {
     Member: string;
@@ -60,6 +56,7 @@ type AtomInformation =
     | Transfer of EntityTransfer
     | Description of EntityDescription
     | Involvement of EntityInvolvement
+    | Deleted
 
 type Signature = {
     Signer:string; // Member ID
