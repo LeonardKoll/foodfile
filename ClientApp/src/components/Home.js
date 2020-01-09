@@ -23,7 +23,7 @@ export function Home ()
             by storing the history of individual food products
             to visualize travel and processing along the supply chain.
             It is designed to work from farm to fork and automatically 
-            connects the dots between the information provided by the suppliers. 
+            connects the dots between the information provided by suppliers. 
             As a decentralized system, FoodFile stores data on-site 
             and gives full access control to the originator. It integrates easely
             in existing production and ERP-landscapes and comes with a low entry barrier
@@ -49,7 +49,7 @@ export function Home ()
             <h3>Technology</h3>
             <p>
             FoodFile is open-source and developed with modern, reliability proven 
-            technologies such as Docker, Elasticsearch and Net Core. It is easy
+            technologies such as Elasticsearch and Net Core and Docker. It is easy
             to deploy and scale on-site, cloud-based or even hybrid.
             FoodFile is built on the belief that blockchain is not an appropriate basis 
             for recordkeeping related to physical goods. You are invited to
