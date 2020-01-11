@@ -5,7 +5,7 @@ open Members
 open FSharp.Data
 open Newtonsoft.Json.Linq
 
-module Search = 
+module Entities = 
 
     let private ExtractFollowupEntities = fun (entities:Entity list) ->
         entities
@@ -29,7 +29,9 @@ module Search =
             
             printfn "%s" url
 
-            let! result = Http.AsyncRequestString url //ToDo: Error Handling. Log errors somewhere end return empty list.
+            let! result = Http.AsyncRequestString url 
+            //ToDo: Error Handling. Log errors somewhere end return empty list.
+            // Wenn eine url nicht stimmt crasht hier aktuell alles
             
             printfn "result %s" (result.ToString())
 
@@ -97,7 +99,7 @@ module Search =
         crs
         |> List.filter ( fun cr -> cr.Member=None )
         |> List.map ( fun ct -> ct.MemberID )
-        |> GetMembers
+        |> GetMembersRemote
         |> List.map ( fun (m) -> {MemberID=m.ID; Member=Some(m); Entities=[]} )
         |> MergeCRs crs
 

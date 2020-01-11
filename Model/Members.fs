@@ -1,5 +1,9 @@
 ﻿namespace FoodFile
 
+open FSharp.Data
+open Newtonsoft.Json
+open Newtonsoft.Json.Linq
+
 // DUMMY
 
 (*
@@ -9,23 +13,36 @@
 
 module Members =
 
-    let freshfruitfarmers = {ID="IK7TEO"; Name=Some("FreshFruitFarmers"); API=Some("https://localhost:5001/api/local/")}
-    let sugarsilo = {ID="UC2NRQ"; Name=Some("SugarSilo"); API=Some("https://localhost:5001/api/local/")}
-    let yummyjam = {ID="8X55N4"; Name=Some("YummyJam"); API=Some("https://localhost:5001/api/local/")}
-    let members = [freshfruitfarmers;sugarsilo;yummyjam]
+    [<Literal>]
+    let MembershipProvider = "http://localhost:5001/"
+    // This instance can also be pure Trace. Then we do not have a participant ID.
+    let thisInstance = Some({ID="2VIJP2"; Name=Some("RealRetail"); API=Some("https://localhost:5001/api/entities/local/"); Password="123"})
 
-    let GetMembers = fun (memberIDs:string list) ->
-        members
-        |> List.filter ( fun elem1 -> List.exists (fun elem2 -> elem1.ID=elem2 ) memberIDs )
+    (*
+    let freshfruitfarmers = {ID="IK7TEO"; Name=Some("FreshFruitFarmers"); API=Some("https://localhost:5001/api/local/"); Password="123"}
+    let sugarsilo = {ID="UC2NRQ"; Name=Some("SugarSilo"); API=Some("https://localhost:5001/api/local/"); Password="123"}
+    let yummyjam = {ID="8X55N4"; Name=Some("YummyJam"); API=Some("https://localhost:5001/api/local/"); Password="123"}
+    let members = [freshfruitfarmers;sugarsilo;yummyjam]
+    *)
+
+    let GetMembersRemote = fun (memberIDs:string list) ->   
+        memberIDs
+        |> function
+            | [] -> []
+            | _ ->
+                memberIDs
+                |> List.map ( fun id -> "id=" + id )
+                |> String.concat "&"
+                |> (fun arguments -> MembershipProvider + "Multiple?" + arguments)
+                |> Http.RequestString //ToDo: Error Handling. Log errors somewhere end return empty list.
+                |> JArray.Parse // Errors may also occur here.
+                |> fun parsed -> parsed.ToObject<Member list>()
 
     let GetMemberAPIs = fun (memberIDs:string list) ->
         memberIDs
-        |> GetMembers
+        |> GetMembersRemote
         |> List.map ( fun p -> p.API )
         |> List.zip memberIDs
-
-    // This instance can also be pure Trace. Then we do not have a participant ID.
-    let thisInstance = Some({ID="2VIJP2"; Name=Some("RealRetail"); API=Some("https://localhost:5001/api/local/")})
 
     let ExtractMemberIDs = fun (entities:Entity list) ->
         entities
@@ -34,4 +51,4 @@ module Members =
             |> List.distinct) []
 
     let ExtractMembers = 
-        ExtractMemberIDs >> GetMembers
+        ExtractMemberIDs >> GetMembersRemote

@@ -14,9 +14,13 @@ module Elastic =
     [<Literal>]
     let EntityIndex = "entities"
     [<Literal>]
+    let MemberIndex = "members"
+    [<Literal>]
     let SearchString = "{\"query\": {\"ids\" : {\"values\" : #IDs}}}"
     [<Literal>]
-    let Host = "http://localhost:9200/"
+    let Host = "http://localhost:9200/" // For docker-compose execution
+
+    // General purpose functions
 
     let private GetByIDs = fun (index:string) (ids:string list) ->
         ids
@@ -29,7 +33,7 @@ module Elastic =
                                     headers = [ "Content-Type","application/json" ], 
                                     body = TextRequest body)
         |> JObject.Parse
-        |> fun (response:JObject) -> 
+        |> fun (response:JObject) ->
             match response.["hits"].["total"].["value"].ToObject<int>() with
             | 0 -> None
             | _ -> Some(response.SelectTokens "hits.hits.._source")
@@ -44,6 +48,9 @@ module Elastic =
         |> fun toSend -> 
             Http.RequestString ( Host + index + "/_doc/" + id, httpMethod = "Put", headers = [ "Content-Type","application/json" ], body = TextRequest toSend)
    
+
+    // Entity functions
+
     let GetEntitiesLocal = fun (entityIDs:string list) ->
         entityIDs
         |> GetByIDs EntityIndex
@@ -74,20 +81,34 @@ module Elastic =
         match entity.Verify with
         | false -> raise (System.ArgumentException("Entity empty or not consistent."))
         | true -> WriteById EntityIndex entity.ID entity
-        
 
-   // Das sollte funktionierren, aber es retrievt ja aktuell nur in der eigenen Datenbank. Wir bräuchten dann als nächstes was, was übergreifend retreivt.
-   // Und wir brauchen getAtoms entityID shortID version bzw getAtoms LongID und halt auch nur entityID shortID, sodass man alle Versionen des Atoms bekommt.
-   // Und im nächsten Schritt haben wir dann vielleicht so tier funktionen:
-        // Tier 1: Funktionen Read und Write Document. Modify?
-        // Tier 2: Funktionen, die Atome beschaffen und schrieben
-        //====== Bevor wir uns im Tier 3 kümmern muss dann Authentication / Authroization her. Tier 2 muss dann auch entsprechend erweitert werden.
-        // Tier 3: Funktionen/Systeme die Caching einstellungen realasieren. 
-        // Tier 4: Funkrionen/Systeme, die Konfliktresolvierung (automatisch oder manuell) realisieren
-    (* let GetAtoms = fun entityID ->
-        entityID
-        |> ReadDocument
+    // Member functions
+
+    (*
+        Note:
+        This stuff is only used if the instance serves as a membership provider.
+        A regular instance can't lookup members from the local db and retrieves them from
+        the membership service API instead.
+    *)
+
+    let GetMembersLocal = fun (memberIDs:string list) ->
+        memberIDs
+        |> GetByIDs MemberIndex
         |> function
-            | None -> None
-            | Some entity -> Some entity.Atoms
-            *)
+            | None -> []
+            | Some(jTokenEnum) ->
+                jTokenEnum
+                |> Seq.map (fun memberJson -> memberJson.ToObject<Member>())
+                |> Seq.toList
+
+    let GetMemberLocal = fun (memberID:string) ->
+        GetMembersLocal [memberID]
+        |> function
+            | [] -> None
+            | [m] -> Some(m)
+            | _ -> None
+
+    let WriteMember = fun (memb:Member) ->
+        WriteById MemberIndex memb.ID memb
+
+    let DeleteMember = DeleteByID MemberIndex

@@ -14,13 +14,13 @@ type ReturnInfo = {
 }
 
 [<ApiController>]
-[<Route("api/[controller]")>]
+[<Route("api/entities/[controller]")>]
 type GlobalController () =
     inherit ControllerBase()
 
     [<HttpGet("{id}")>] // Jetzt wo hier string als return steht müssen wir ContentType JSon evtl manuell setzen.
     member __.Get (id:string) : string = // Marticipant ID optional  
-        let entities = Search.CompleteSearch None [id]
+        let entities = Entities.CompleteSearch None [id]
         let members = ExtractMembers entities
 
         {Entities=entities; Members=members}

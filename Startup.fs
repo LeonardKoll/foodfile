@@ -2,13 +2,12 @@
 
 open Microsoft.AspNetCore.Builder
 open Microsoft.AspNetCore.Hosting
-open Microsoft.AspNetCore.HttpsPolicy;
-open Microsoft.AspNetCore.Mvc
 open Microsoft.Extensions.Configuration
 open Microsoft.Extensions.DependencyInjection
 open Microsoft.Extensions.Hosting
 open Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer
 open System
+open Newtonsoft.Json
 
 // SPA = Single Page Applications
 
@@ -59,6 +58,5 @@ module Startup =
 
     [<EntryPoint>]
     let main args =
-        //Testdata.ExecuteWrite()
         CreateHostBuilder(args).Build().Run()
         0

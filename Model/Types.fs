@@ -1,17 +1,23 @@
 ﻿namespace FoodFile
 
-open Newtonsoft.Json.Linq
 open Newtonsoft.Json
 open System
 
-
+type ProcessingResult<'TResult> = 
+    | Error of string
+    | Result of 'TResult
 
 type Member = {
     ID: string; // 6 Zeichen
     Name: string option;
     API: string option;
+    Password: string; //ToDo
     // Future: Signature Key, Expires (when we need to discard memory cahce)
 }
+with   
+    [<JsonIgnore>]
+    member this.Pubish =
+        {this with Password=""}
 
 type Location = {
     Name: string option;
@@ -178,6 +184,9 @@ module Types =
     [<Literal>]
     let AtomIDLength = 4
 
+    [<Literal>]
+    let MemberIDLength = 6
+
     let private newID = fun (length:int) ->
         let r = Random()
         let chars = Array.concat([[|'A' .. 'Z'|];[|'0' .. '9'|]])
@@ -186,3 +195,4 @@ module Types =
 
     let newEntityID = newID EntityIDLength
     let newAtomID = newID AtomIDLength
+    let newMemberID = newID MemberIDLength

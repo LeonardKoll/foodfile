@@ -8,18 +8,14 @@ open System
 open Elastic
 open Types
 
-type ProcessingResult<'TResult> = 
-    | Error of string
-    | Result of 'TResult
-
 [<ApiController>]
-[<Route("api/[controller]")>]
+[<Route("api/entities/[controller]")>]
 type LocalController () =
     inherit ControllerBase()
 
     [<HttpGet("{id}")>] // Jetzt wo hier string als return steht müssen wir ContentType JSon evtl manuell setzen.
     member __.Get([<FromQuery>] id:string array) : string = //Multiple
-        Search.LocalSearch (Array.toList id)
+        Entities.LocalSearch (Array.toList id)
         |> JsonConvert.SerializeObject
         // ToDo: Error Handling.
 

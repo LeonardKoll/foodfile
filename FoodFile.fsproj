@@ -21,7 +21,8 @@
     <Compile Include="Model\Types.fs" />
     <Compile Include="Model\Members.fs" />
     <Compile Include="Model\Elastic.fs" />
-    <Compile Include="Model\Search.fs" />
+    <Compile Include="Model\Entities.fs" />
+    <Compile Include="Controllers\MembersController.fs" />
     <Compile Include="Controllers\LocalController.fs" />
     <Compile Include="Controllers\GlobalController.fs" />
     <Compile Include="Test\Testdata.fs" />
@@ -39,7 +40,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="FSharp.Data" Version="3.3.2" />
+    <PackageReference Include="FSharp.Data" Version="3.3.3" />
     <PackageReference Include="Microsoft.AspNetCore.App" Version="2.2.8" />
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.9.10" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
