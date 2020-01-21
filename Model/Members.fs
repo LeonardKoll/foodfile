@@ -19,9 +19,9 @@ module Members =
     let thisInstance = Some({ID="2VIJP2"; Name="RealRetail"; API="https://localhost:5001/api/entities/local/"; Password="123"})
 
     (*
-    let freshfruitfarmers = {ID="IK7TEO"; Name="FreshFruitFarmers"; API="https://localhost:5001/api/local/"; Password="123"}
-    let sugarsilo = {ID="UC2NRQ"; Name="SugarSilo"; API="https://localhost:5001/api/local/"; Password="123"}
-    let yummyjam = {ID="8X55N4"; Name="YummyJam"; API="https://localhost:5001/api/local/"; Password="123"}
+    let freshfruitfarmers = {ID="IK7TEO"; Name="FreshFruitFarmers"; API="https://localhost:5001/api/entities/local/"; Password="123"}
+    let sugarsilo = {ID="UC2NRQ"; Name="SugarSilo"; API="https://localhost:5001/api/entities/local/"; Password="123"}
+    let yummyjam = {ID="8X55N4"; Name="YummyJam"; API="https://localhost:5001/api/entities/local/"; Password="123"}
     let members = [freshfruitfarmers;sugarsilo;yummyjam]
     *)
 

@@ -23,14 +23,19 @@ export function Capture()
             <img className="img-fluid" src="/img/capture_cover.jpg"></img>
             <h1 className="mt-5 mb-3">Capture</h1>
             <p>
+                Data-Capturing is designed to be directly intergrated with inventory management or production systems. 
+                You may alternatively use this interface to add data manually.
+            </p>
+            <textarea   class="form-control" 
+                        rows="10" placeholder={JSON.stringify(exampleAtom)} 
+                        onCahnge={(event) => setAtoms(event.target.value)}></textarea>
+            <small class="form-text text-muted">
                 To capture data, POST the information atoms to /api/entities/local/. 
                 The atoms need to be provided as a list. All atoms of one call must belong to the same entity.
                 You may paste your JSON (list of atoms) here to let this fronted handle the POST for you.
-            </p>
-            <textarea   class="form-control mb-3" 
-                        rows="10" placeholder={JSON.stringify(exampleAtom)} 
-                        onCahnge={(event) => setAtoms(event.target.value)}></textarea>
-            <button type="submit" class="btn btn-primary mb-3" onClick={fireRequest}>POST</button>
+            </small>
+
+            <button type="submit" class="btn btn-primary mb-3 mt-3" onClick={fireRequest}>POST</button>
 
             { result.Case === "loading" &&
                 <div class="alert alert-secondary" role="alert">
@@ -50,3 +55,4 @@ export function Capture()
         </div>
     );
 }
+

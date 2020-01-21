@@ -6,16 +6,22 @@ import axios from 'axios';
 function Trace()
 {
     const [searchterm, setSearchterm] = useState("")
+    const [requeststate, setRequeststate] = useState("")
     const [searchresult, setSearchresult] = useState({
         Entities:[],
         Members:[]
       });
 
     useEffect(() => {
-        if (searchterm.length == 10)
+        if (searchterm.length == 10 || searchterm.length== 17)
         {
-            axios.get('/api/entities/global/' + searchterm).then (response =>  {
-            setSearchresult (response.data);
+            setRequeststate("loading");
+            axios.get('/api/entities/global/' + searchterm)
+            .then (response =>  {
+                setRequeststate("result");
+                setSearchresult (response.data);
+            }).catch (err => {
+                setRequeststate("error");
             });
         }
     }, [searchterm]);
@@ -29,8 +35,27 @@ function Trace()
                 The trace code should have the form indicated below, with the first six digits being optional.
                 Please note that collecting data from other members of the FoodFile network takes a few moments.
             </p>
+
             <TraceSearch setSearchterm = {setSearchterm}/>
+
+            { requeststate === "loading" &&
+                <div class="alert alert-secondary" role="alert">
+                    Processing your request...
+                </div>
+            }
+            { requeststate === "result" &&
+                <div class="alert alert-success" role="alert">
+                    Retreival completed.
+                </div>
+            }
+            { requeststate === "error" &&
+                <div class="alert alert-warning" role="alert">
+                    Retreival failed.
+                </div>
+            }
+
             <EntityTree entities={searchresult.Entities} members={searchresult.Members} rootID={searchterm} />
+            
         </div>
     );
 }
