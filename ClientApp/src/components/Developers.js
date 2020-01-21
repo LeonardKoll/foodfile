@@ -5,7 +5,7 @@ export function Developers()
   return (
     <div>
       <img className="img-fluid" src="/img/developers_cover.jpg"></img>
-      <h1 className="mt-5">Developers</h1>
+      <h1 className="mt-5 mb-3">Developers</h1>
 
       <div className="container">
         <div className="row">

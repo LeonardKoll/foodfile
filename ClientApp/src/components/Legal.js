@@ -6,7 +6,7 @@ export function Legal()
         <div>
             <img className="img-fluid" src="/img/legal_cover.jpg"></img>
             
-            <h1 className="mt-5">Responsible</h1>
+            <h1 className="mt-5 mb-3">Responsible</h1>
             <p>Leonard Koll
             <br></br>
             Merianstr. 25, 54292 Trier
@@ -15,14 +15,14 @@ export function Legal()
             <br></br>
             hi@evorne.com</p>
 
-            <h1>References</h1>
+            <h1 className="mt-5 mb-3">References</h1>
             <p>Icons made by <a href="https://www.flaticon.com/authors/wanicon" title="wanicon">wanicon</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a>
             <br></br>
             Privcy Policy created with <a href="https://termly.io">termly.io</a>
             <br></br>
             Disclaimer created with <a href="https://www.disclaimergenerator.net/">disclaimergenerator.net</a></p>
 
-            <h1>Privacy Notice</h1>
+            <h1 className="mt-5 mb-3">Privacy Notice</h1>
             <p>Last updated January 09, 2020</p>
             <p>Thank you for choosing to be part of our community at FoodFile (&ldquo;Company&rdquo;, &ldquo;we&rdquo;, &ldquo;us&rdquo;, or &ldquo;our&rdquo;). We are committed to protecting your personal information and your right to privacy. If you have any questions or concerns about our notice , or our practices with regards to your personal information, please contact us at hi@evorne.com.</p>
             <p>When you visit our website, and use our services, you trust us with your personal information. We take your privacy very seriously. In this privacy notice, we seek to explain to you in the clearest way possible what information we collect, how we use it and what rights you have in relation to it. We hope you take some time to read through it carefully, as it is important. If there are any terms in this privacy notice that you do not agree with, please discontinue use of our Sites and our services. </p>

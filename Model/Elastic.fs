@@ -22,6 +22,11 @@ module Elastic =
 
     // General purpose functions
 
+    let InitIndices = fun () ->
+        Http.RequestString ( Host + EntityIndex, httpMethod = "PUT") |> ignore
+        Http.RequestString ( Host + MemberIndex, httpMethod = "PUT") |> ignore
+
+
     let private GetByIDs = fun (index:string) (ids:string list) ->
         ids
         |> JsonConvert.SerializeObject

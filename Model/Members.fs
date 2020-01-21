@@ -14,14 +14,14 @@ open Newtonsoft.Json.Linq
 module Members =
 
     [<Literal>]
-    let MembershipProvider = "http://localhost:5001/"
+    let MembershipProvider = "https://localhost:5001/api/members/"
     // This instance can also be pure Trace. Then we do not have a participant ID.
-    let thisInstance = Some({ID="2VIJP2"; Name=Some("RealRetail"); API=Some("https://localhost:5001/api/entities/local/"); Password="123"})
+    let thisInstance = Some({ID="2VIJP2"; Name="RealRetail"; API="https://localhost:5001/api/entities/local/"; Password="123"})
 
     (*
-    let freshfruitfarmers = {ID="IK7TEO"; Name=Some("FreshFruitFarmers"); API=Some("https://localhost:5001/api/local/"); Password="123"}
-    let sugarsilo = {ID="UC2NRQ"; Name=Some("SugarSilo"); API=Some("https://localhost:5001/api/local/"); Password="123"}
-    let yummyjam = {ID="8X55N4"; Name=Some("YummyJam"); API=Some("https://localhost:5001/api/local/"); Password="123"}
+    let freshfruitfarmers = {ID="IK7TEO"; Name="FreshFruitFarmers"; API="https://localhost:5001/api/local/"; Password="123"}
+    let sugarsilo = {ID="UC2NRQ"; Name="SugarSilo"; API="https://localhost:5001/api/local/"; Password="123"}
+    let yummyjam = {ID="8X55N4"; Name="YummyJam"; API="https://localhost:5001/api/local/"; Password="123"}
     let members = [freshfruitfarmers;sugarsilo;yummyjam]
     *)
 
@@ -33,7 +33,11 @@ module Members =
                 memberIDs
                 |> List.map ( fun id -> "id=" + id )
                 |> String.concat "&"
-                |> (fun arguments -> MembershipProvider + "Multiple?" + arguments)
+                |> (fun arguments -> 
+                    let test = MembershipProvider + "Multiple?" + arguments
+                    printfn "%s" test
+                    test
+                    )
                 |> Http.RequestString //ToDo: Error Handling. Log errors somewhere end return empty list.
                 |> JArray.Parse // Errors may also occur here.
                 |> fun parsed -> parsed.ToObject<Member list>()

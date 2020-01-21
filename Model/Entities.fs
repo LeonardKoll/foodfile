@@ -110,7 +110,7 @@ module Entities =
 
         let cleanedCRS = 
             (FillCRsAPIs
-            >> List.filter ( fun (cr:CompletedRetreival) -> not ((cr.Member=None) || cr.Member.Value.API=None) )) crs
+            >> List.filter ( fun (cr:CompletedRetreival) -> not (cr.Member=None) )) crs
         
         cleanedCRS
         |> List.map ( fun (cr) ->
@@ -123,7 +123,7 @@ module Entities =
                 printfn "todoIDs: %A" todoIDs
 
                 // Execute request Async
-                let! entities = GetEntitiesRemote cr.Member.Value.API.Value todoIDs
+                let! entities = GetEntitiesRemote cr.Member.Value.API todoIDs
                 // On method call, MemberURL will always be Some bc we cleaned the CRS list before this call.
 
                 return (cr.MemberID, entities)

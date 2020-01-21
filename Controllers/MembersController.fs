@@ -23,7 +23,7 @@ type MembersController () =
         id
         |> Array.toList
         |> Elastic.GetMembersLocal
-        |> List.map (fun memb -> memb.Pubish)
+        |> List.map (fun memb -> memb.Publish)
         |> JsonConvert.SerializeObject
         // ToDo: Error Handling.
 
@@ -40,7 +40,7 @@ type MembersController () =
             | "" -> 
                 let memberID = newMemberID
                 {memb with ID=memberID} |> WriteMember |> ignore
-                Result memberID
+                Result ("Created new member with ID " + memberID.ToString())
             | id -> 
                 Elastic.GetMemberLocal id
                 |> function
@@ -49,7 +49,7 @@ type MembersController () =
                         match result.Password=memb.Password with
                         | true -> 
                             WriteMember memb |> ignore
-                            Result id
+                            Result ("Edited member with ID " + id.ToString())
                         | false -> 
                             Error "Passwort does not match."
         
@@ -60,7 +60,7 @@ type MembersController () =
         // ToDo: What if PW Change desired? Brute Force?
 
     [<HttpDelete>]
-    member __.Delete(toDelete:Object) =
+    member __.Delete([<FromBody>] toDelete:Object) : string =
 
         let memb = 
             (JObject.Parse
@@ -76,7 +76,7 @@ type MembersController () =
                 match result.Password=memb.Password with
                     | true -> 
                         DeleteMember memb.ID |> ignore
-                        Result "Deleted"
+                        Result ("Deleted member with ID " + memb.ID.ToString())
                     | false -> 
                         Error "Passwort does not match."      
         // In any case, we will eventually output the result.

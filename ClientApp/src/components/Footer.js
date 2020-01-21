@@ -5,7 +5,7 @@ export function Footer()
 {
 
     return (       
-        <footer className="page-footer font-small bg-white text-dark border-top">
+        <footer className="page-footer font-small bg-white text-dark border-top mt-5">
             <div className="container">
                 <div className="row py-5">
                     <div className="col-sm">

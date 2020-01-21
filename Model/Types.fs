@@ -9,14 +9,14 @@ type ProcessingResult<'TResult> =
 
 type Member = {
     ID: string; // 6 Zeichen
-    Name: string option;
-    API: string option;
+    Name: string;
+    API: string;
     Password: string; //ToDo
     // Future: Signature Key, Expires (when we need to discard memory cahce)
 }
 with   
     [<JsonIgnore>]
-    member this.Pubish =
+    member this.Publish =
         {this with Password=""}
 
 type Location = {

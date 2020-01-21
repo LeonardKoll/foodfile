@@ -82,6 +82,9 @@ type LocalController () =
                 |> ignore 
                 idResult
         // In any case, we will eventually output the idResult.
+        |> function
+            | Error e -> Error e
+            | Result r -> Result ("Atoms for entity " + r + " stored")
         |> JsonConvert.SerializeObject
         
         // ToDO: Error Handling.

@@ -75,7 +75,7 @@ function generateHierarchy (entities, members, rootID) {
                         var found = members.find (c => c.ID == member)
                         if (typeof found !== 'undefined')
                         {
-                            if (found.Name != null) member = found.Name.Fields[0];
+                            member = found.Name;
                         }
                     } 
                     
@@ -127,7 +127,7 @@ function generateHierarchy (entities, members, rootID) {
                         var found = members.find (c => c.ID == member)
                         if (typeof found !== 'undefined')
                         {
-                            if (found.Name != null) member = found.Name.Fields[0];
+                            member = found.Name;
                         }
                     }
                     else member = null;

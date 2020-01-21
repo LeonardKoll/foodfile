@@ -58,5 +58,13 @@ module Startup =
 
     [<EntryPoint>]
     let main args =
+        (*
+        Members.members
+        |> List.forall (fun memb ->
+                Elastic.WriteMember memb |> ignore
+                true
+            )
+        *)
+        Elastic.InitIndices
         CreateHostBuilder(args).Build().Run()
         0
