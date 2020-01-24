@@ -65,6 +65,7 @@ module Startup =
                 true
             )
         *)
-        Elastic.InitIndices
+        Elastic.InitIndices ()
+        //Testdata.ExecuteWrite ()
         CreateHostBuilder(args).Build().Run()
         0

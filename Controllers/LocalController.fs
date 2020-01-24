@@ -2,20 +2,26 @@
 
 open Microsoft.AspNetCore.Mvc
 open Newtonsoft.Json
-open Newtonsoft.Json
 open Newtonsoft.Json.Linq
 open System
 open Elastic
 open Types
+open System.Runtime.InteropServices
 
 [<ApiController>]
 [<Route("api/entities/[controller]")>]
 type LocalController () =
     inherit ControllerBase()
 
-    [<HttpGet("{id}")>] // Jetzt wo hier string als return steht müssen wir ContentType JSon evtl manuell setzen.
-    member __.Get([<FromQuery>] id:string array) : string = //Multiple
-        Entities.LocalSearch (Array.toList id)
+    [<HttpGet("downchain/{id}")>] // Jetzt wo hier string als return steht müssen wir ContentType JSon evtl manuell setzen.
+    member __.GetDownchain([<FromQuery>] id:string array) : string = //Multiple
+        Entities.LocalDownchainSearch (Array.toList id)
+        |> JsonConvert.SerializeObject
+        // ToDo: Error Handling.
+
+    [<HttpGet("upchain/{id}")>] // Jetzt wo hier string als return steht müssen wir ContentType JSon evtl manuell setzen.
+    member __.GetUpchain([<FromQuery>] id:string array) : string = //Multiple
+        Entities.LocalUpchainSearch (Array.toList id)
         |> JsonConvert.SerializeObject
         // ToDo: Error Handling.
 

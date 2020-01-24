@@ -109,6 +109,22 @@ type Entity = {
     ID:string;
 } with
     
+    // Import for Elasticsearch to allow for efficient upchain queries.
+    member this.InEntities =
+        this.Atoms
+        |> List.sortBy (fun (atom:Atom) -> atom.Version)
+        |> List.tryFindBack (fun (atom:Atom) -> 
+            match atom.Information with
+            | Creation _ -> true
+            | _ -> false
+            )
+        |> function
+            | None -> []
+            | Some atom ->
+                match atom.Information with
+                | Creation c -> c.InEntities
+                | _ -> []
+    
     [<JsonIgnore>]
     member this.VerifiedID =
         if this.Atoms.IsEmpty then None
@@ -116,14 +132,6 @@ type Entity = {
         then Some(this.Atoms.Head.EntityID)
         else None
     
-    [<JsonIgnore>]
-    member this.InvolvedEntities =
-        this.Atoms
-        |> List.fold (fun (state:string list) atom ->
-            match atom.Information with
-            | Creation x -> state@x.InEntities 
-            | _ -> state
-            ) []
 
     [<JsonIgnore>]
     member this.InvolvedMembers =

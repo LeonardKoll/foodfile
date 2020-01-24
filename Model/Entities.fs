@@ -7,10 +7,10 @@ open Newtonsoft.Json.Linq
 
 module Entities = 
 
-    let private ExtractFollowupEntities = fun (entities:Entity list) ->
+    let private ExtractInEntities = fun (entities:Entity list) ->
         entities
         |> List.fold (fun (state:string list) entity ->
-            entity.InvolvedEntities @ state
+            entity.InEntities @ state
             |> List.distinct) []
 
     let rec private MergeEntities = fun (toMerge:Entity list) (basis:Entity list) ->
@@ -41,23 +41,37 @@ module Entities =
                 >> List.filter( fun entity -> entity.Verify )) result
         }
 
-    let rec private ExecuteLocalSearch (result:Entity list) (doneIDs:string list) (openIDs:string list) = 
+    let rec private ExecuteLocalDownchainSearch (doneIDs:string list) (result:Entity list) (openIDs:string list) = 
         if openIDs.IsEmpty then result else
         let doneAfterIDs = doneIDs @ openIDs
         openIDs
-        |> GetEntitiesLocal
+        |> Elastic.GetEntitiesLocal
         |> function
             | [] -> result
             | entities -> 
-                ExtractFollowupEntities entities
+                ExtractInEntities entities
                 // Remove those we already did and those already on our ToDo
                 |> List.filter (fun id -> not(List.exists (fun elem -> id=elem) doneAfterIDs))
-                |> ExecuteLocalSearch (result @ entities) doneAfterIDs
+                |> ExecuteLocalDownchainSearch doneAfterIDs (result @ entities) 
         (*
             The openIDs is necessary because in some cases, the search might be triggered
             with multiple openIDs elements. During execution, we might find entities which 
             are also on the open list, but we want to prevent to search twice.
         *)
+
+    let rec private ExecuteLocalUpchainSearch (doneIDs:string list) (result:Entity list) (openIDs:string list) =
+        if openIDs.IsEmpty then result else
+        let doneAfterIDs = doneIDs @ openIDs
+        openIDs
+        |> Elastic.GetByInEntities
+        |> function
+            | [] -> result
+            | entities ->
+                entities
+                |> List.map (fun entity -> entity.ID)
+                // Remove those we already did and those already on our ToDo
+                |> List.filter (fun id -> not(List.exists (fun elem -> id=elem) doneAfterIDs))
+                |> ExecuteLocalUpchainSearch doneAfterIDs (result @ entities)
 
     type CompletedRetreival = {
         MemberID:string;
@@ -134,7 +148,7 @@ module Entities =
         |> Array.fold ( fun (searchAgain, mergedE, mergedCRS, mergedAll) (source, entities) ->
             
             let followupE = 
-                (ExtractFollowupEntities
+                (ExtractInEntities
                 >> List.filter (fun id -> 
                     not (List.exists (fun elem -> id=elem) allIDs)) ) entities
 
@@ -188,7 +202,13 @@ module Entities =
             adding entities or other participants.
         *)
 
-    let LocalSearch = ExecuteLocalSearch [] []
+    let LocalDownchainSearch = ExecuteLocalDownchainSearch [] []
+
+    let LocalUpchainSearch = fun (entityIDs:string list) ->
+        entityIDs
+        |> GetEntitiesLocal
+        |> fun initials -> ExecuteLocalUpchainSearch [] initials entityIDs
+        
 
     let CompleteSearch = fun (memberID:string option) (entityIDs:string list) ->
         match (memberID, thisInstance) with
