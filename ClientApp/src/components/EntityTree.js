@@ -161,7 +161,7 @@ function generateHierarchy (entities, members, rootID) {
     return newHierarchyItem (rootID, null, null, null);
 }
 
-function appendTreeSVG (entities, members, rootID, containerRef)
+function placeTreeSVG (entities, members, rootID, containerRef)
 {   
     var treeData = generateHierarchy(entities, members, rootID);
 
@@ -181,6 +181,7 @@ function appendTreeSVG (entities, members, rootID, containerRef)
     // append the svg obgect to the body of the page
     // appends a 'group' element to 'svg'
     // moves the 'group' element to the top left margin
+    d3.select(containerRef).select("svg").remove();
     var svg = d3.select(containerRef).append("svg")
         .attr("width", width + margin.left + margin.right)
         .attr("height", height + margin.top + margin.bottom);
@@ -236,7 +237,7 @@ function EntityTree({entities, members, rootID})
     useEffect(() => {
 
         if (entities.length>0)
-            appendTreeSVG(entities, members, rootID, containerRef.current);  
+            placeTreeSVG(entities, members, rootID, containerRef.current);  
         
         }, [entities.length,members.length]);
         /*

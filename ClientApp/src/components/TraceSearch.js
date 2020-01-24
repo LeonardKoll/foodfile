@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from 'react';
 
-function TraceSearch ({setSearchterm})
+function TraceSearch ({setSearchterm, direction, setDirection})
 {
     return (
         <div className="form-group">
@@ -12,18 +12,14 @@ function TraceSearch ({setSearchterm})
             </form>
             </div>
 
-            <label className="mb-0">Please indicate whether you are interested in</label>
-
-            <div className="form-check ml-4">
-            <input className="form-check-input" type="radio" value="option2" checked="checked"/>
-            <label className="form-check-label">the origin of this item</label>
+            <div class="btn-group btn-group-toggle mb-3" data-toggle="buttons">
+                <label class={(direction==="downchain" ? "active" : "") + " btn btn-secondary"}>
+                    <input type="radio" name="options" id="option1" autocomplete="off" onClick={() => setDirection("downchain")} />Trace to origin
+                </label>
+                <label class={(direction==="upchain" ? "active" : "") + " btn btn-secondary"}>
+                    <input type="radio" name="options" id="option2" autocomplete="off" onClick={() => setDirection("upchain")} />Trace to shelf
+                </label>
             </div>
-
-            <div className="form-check ml-4 disabled">
-            <input className="form-check-input" type="radio" value="option3" disabled />
-            <label className="form-check-label">the usage of this item</label>
-            </div>
-
         </div>
     );
 }

@@ -5,6 +5,7 @@ import axios from 'axios';
 
 function Trace()
 {
+    const [direction, setDirection] = useState("downchain");
     const [searchterm, setSearchterm] = useState("")
     const [requeststate, setRequeststate] = useState("")
     const [searchresult, setSearchresult] = useState({
@@ -16,7 +17,7 @@ function Trace()
         if (searchterm.length == 10 || searchterm.length== 17)
         {
             setRequeststate("loading");
-            axios.get('/api/entities/global/' + searchterm)
+            axios.get('/api/entities/global/' + direction + "/" + searchterm)
             .then (response =>  {
                 setRequeststate("result");
                 setSearchresult (response.data);
@@ -24,7 +25,7 @@ function Trace()
                 setRequeststate("error");
             });
         }
-    }, [searchterm]);
+    }, [searchterm, direction]);
 
     return (       
         <div>
@@ -36,7 +37,7 @@ function Trace()
                 Please note that collecting data from other members of the FoodFile network takes a few moments.
             </p>
 
-            <TraceSearch setSearchterm = {setSearchterm}/>
+            <TraceSearch setSearchterm={setSearchterm} direction={direction} setDirection={setDirection}/>
 
             { requeststate === "loading" &&
                 <div class="alert alert-secondary" role="alert">

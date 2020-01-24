@@ -6,7 +6,6 @@ open Newtonsoft.Json.Linq
 open System
 open Elastic
 open Types
-open System.Runtime.InteropServices
 
 [<ApiController>]
 [<Route("api/entities/[controller]")>]

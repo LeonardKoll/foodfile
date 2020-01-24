@@ -5,6 +5,8 @@ open Members
 open FSharp.Data
 open Newtonsoft.Json.Linq
 
+type Direction = Downchain | Upchain
+
 module Entities = 
 
     let private ExtractInEntities = fun (entities:Entity list) ->
@@ -18,14 +20,14 @@ module Entities =
         toMerge.Head.MergeInto basis
         |> MergeEntities toMerge.Tail
 
-    let GetEntitiesRemote = fun (memberAPI:string) (entityIDs:string list) ->
+    let SearchEntitiesRemote = fun (direction:Direction) (memberAPI:string) (entityIDs:string list) ->
         printfn "imput entities: %A" entityIDs
         async {
             
             let url = 
                 (List.map ( fun id -> "id=" + id )
                 >> String.concat "&"
-                >> (fun arguments -> memberAPI + "Multiple?" + arguments)) entityIDs
+                >> (fun arguments -> memberAPI + direction.ToString() + "/Multiple?" + arguments)) entityIDs
             
             printfn "%s" url
 
@@ -117,7 +119,7 @@ module Entities =
         |> List.map ( fun (m) -> {MemberID=m.ID; Member=Some(m); Entities=[]} )
         |> MergeCRs crs
 
-    let rec private ExecuteCompleteSearch = fun (result:Entity list) (crs: CompletedRetreival list ) (allIDs:string list) ->
+    let rec private ExecuteCompleteSearch = fun (result:Entity list) (crs: CompletedRetreival list ) (direction:Direction) (allIDs:string list) ->
              
         printfn "allIDs: %A" allIDs
         printfn "doneIDs: %A" crs
@@ -137,7 +139,7 @@ module Entities =
                 printfn "todoIDs: %A" todoIDs
 
                 // Execute request Async
-                let! entities = GetEntitiesRemote cr.Member.Value.API todoIDs
+                let! entities = SearchEntitiesRemote direction cr.Member.Value.API todoIDs
                 // On method call, MemberURL will always be Some bc we cleaned the CRS list before this call.
 
                 return (cr.MemberID, entities)
@@ -146,11 +148,16 @@ module Entities =
         |> (Async.Parallel >> Async.RunSynchronously)
         // Merge Data
         |> Array.fold ( fun (searchAgain, mergedE, mergedCRS, mergedAll) (source, entities) ->
-            
-            let followupE = 
-                (ExtractInEntities
-                >> List.filter (fun id -> 
-                    not (List.exists (fun elem -> id=elem) allIDs)) ) entities
+
+            let followupE =
+                match direction with
+                | Downchain ->
+                    entities
+                    |> ExtractInEntities            
+                | Upchain ->
+                    entities
+                    |> List.map (fun entity -> entity.ID)
+                |> List.filter (fun id -> not (List.exists (fun elem -> id=elem) allIDs))
 
             let followupP = 
                 (ExtractMemberIDs  
@@ -184,7 +191,7 @@ module Entities =
             ) (false, result, crs, allIDs)
         |> function
             | (false, mergedE, _, _) -> mergedE
-            | (true, mergedE, mergedDone, mergedAll) -> ExecuteCompleteSearch mergedE mergedDone mergedAll
+            | (true, mergedE, mergedDone, mergedAll) -> ExecuteCompleteSearch mergedE mergedDone direction mergedAll
         (*
             doneIDs has the same purpose as in ExecuteSearchLocal. However, it is by participant here: (participant-ID, participant-URL, [done Entities])
             We do not maintain openIDs when we go down recursively but allIDs.
@@ -210,21 +217,21 @@ module Entities =
         |> fun initials -> ExecuteLocalUpchainSearch [] initials entityIDs
         
 
-    let CompleteSearch = fun (memberID:string option) (entityIDs:string list) ->
+    let CompleteSearch = fun (direction:Direction) (memberID:string option) (entityIDs:string list) ->
         match (memberID, thisInstance) with
         | (None, None) -> []
         | (None, Some ti ) ->
             ExecuteCompleteSearch [] [
                 {MemberID=ti.ID; Member=Some(ti); Entities=[]}
-            ] entityIDs
+            ] direction entityIDs
         | (Some pID, None) ->
             ExecuteCompleteSearch [] [
                 {MemberID=pID; Member=None; Entities=[]}
-            ] entityIDs
+            ] direction entityIDs
         | (Some pID, Some ti) ->
             ExecuteCompleteSearch [] [
                 {MemberID=ti.ID; Member=Some(ti); Entities=[]};
                 {MemberID=pID; Member=None; Entities=[]}
-            ] entityIDs
+            ] direction entityIDs
 
    
