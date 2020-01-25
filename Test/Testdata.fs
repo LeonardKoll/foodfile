@@ -106,7 +106,7 @@ module Testdata =
         ]
     }
 
-    let jam = {
+    let jam1 = {
         ID = "6FGEMO4WX8";
         Atoms = [
             
@@ -117,6 +117,86 @@ module Testdata =
 
             // Production
             {AtomID = "ZSOC"; EntityID="6FGEMO4WX8"; Version=1; 
+            Information = Creation ({   InEntities = [erdbeeren.ID; gelierzucker.ID]; 
+                                        Location = Some({Name=Some("YummyJam Facilty"); Coordinates="51.590067, 8.1050100"})
+                                        Responsible=yummyjam
+                                        Timestamp = 1568979091L});
+            Signatures= []}
+            
+        ]
+    }
+
+    let jam2 = {
+        ID = "PMK9BG1YL5";
+        Atoms = [
+            
+            // Entity Description
+            {AtomID = "TAEF"; EntityID="PMK9BG1YL5"; Version=1; 
+            Information = Description ({Name="Strawberry Jam Jar" ; Certificates=[]});
+            Signatures= []}
+
+            // Production
+            {AtomID = "MFEA"; EntityID="PMK9BG1YL5"; Version=1; 
+            Information = Creation ({   InEntities = [erdbeeren.ID; gelierzucker.ID]; 
+                                        Location = Some({Name=Some("YummyJam Facilty"); Coordinates="51.590067, 8.1050100"})
+                                        Responsible=yummyjam
+                                        Timestamp = 1568979091L});
+            Signatures= []}
+            
+        ]
+    }
+
+    let jam3 = {
+        ID = "JVE8F98148";
+        Atoms = [
+            
+            // Entity Description
+            {AtomID = "0G3T"; EntityID="JVE8F98148"; Version=1; 
+            Information = Description ({Name="Strawberry Jam Jar" ; Certificates=[]});
+            Signatures= []}
+
+            // Production
+            {AtomID = "OO4Q"; EntityID="JVE8F98148"; Version=1; 
+            Information = Creation ({   InEntities = [erdbeeren.ID; gelierzucker.ID]; 
+                                        Location = Some({Name=Some("YummyJam Facilty"); Coordinates="51.590067, 8.1050100"})
+                                        Responsible=yummyjam
+                                        Timestamp = 1568979091L});
+            Signatures= []}
+            
+        ]
+    }
+
+    let jam4 = {
+        ID = "LL9ZOFC5EH";
+        Atoms = [
+            
+            // Entity Description
+            {AtomID = "JN2U"; EntityID="LL9ZOFC5EH"; Version=1; 
+            Information = Description ({Name="Strawberry Jam Jar" ; Certificates=[]});
+            Signatures= []}
+
+            // Production
+            {AtomID = "XF78"; EntityID="LL9ZOFC5EH"; Version=1; 
+            Information = Creation ({   InEntities = [erdbeeren.ID; gelierzucker.ID]; 
+                                        Location = Some({Name=Some("YummyJam Facilty"); Coordinates="51.590067, 8.1050100"})
+                                        Responsible=yummyjam
+                                        Timestamp = 1568979091L});
+            Signatures= []}
+            
+        ]
+    }
+
+    let jam5 = {
+        ID = "1I2VHCWKJL";
+        Atoms = [
+            
+            // Entity Description
+            {AtomID = "4BZD"; EntityID="1I2VHCWKJL"; Version=1; 
+            Information = Description ({Name="Strawberry Jam Jar" ; Certificates=[]});
+            Signatures= []}
+
+            // Production
+            {AtomID = "VS2Y"; EntityID="1I2VHCWKJL"; Version=1; 
             Information = Creation ({   InEntities = [erdbeeren.ID; gelierzucker.ID]; 
                                         Location = Some({Name=Some("YummyJam Facilty"); Coordinates="51.590067, 8.1050100"})
                                         Responsible=yummyjam
@@ -138,4 +218,8 @@ module Testdata =
         WriteEntity zuckerrueben            |> printf "Write Result: %s"
         WriteEntity geliermittel            |> printf "Write Result: %s"
         WriteEntity gelierzucker            |> printf "Write Result: %s"
-        WriteEntity jam                     |> printf "Write Result: %s"
+        WriteEntity jam1                    |> printf "Write Result: %s"
+        WriteEntity jam2                    |> printf "Write Result: %s"
+        WriteEntity jam3                    |> printf "Write Result: %s"
+        WriteEntity jam4                    |> printf "Write Result: %s"
+        WriteEntity jam5                    |> printf "Write Result: %s"

@@ -24,7 +24,7 @@ export function Developers()
             </div>
             <h3>Docker</h3>
             <p>
-            The Git-Master branch is availble as container on <a href="https://hub.docker.com/r/leonardkoll/foodfile">docker hub</a>.
+            The Git-Master branch is availble as container on <a href="https://hub.docker.com/r/leonardkoll/foodfile">Docker Hub</a>.
             Please note that you must compose it with <a href="https://hub.docker.com/_/elasticsearch">Elasticsearch</a>.
             You may also <br></br>docker pull leonardkoll/foodfile.
             </p>

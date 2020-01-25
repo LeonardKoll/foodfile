@@ -6,8 +6,6 @@ open Microsoft.Extensions.Configuration
 open Microsoft.Extensions.DependencyInjection
 open Microsoft.Extensions.Hosting
 open Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer
-open System
-open Newtonsoft.Json
 
 // SPA = Single Page Applications
 

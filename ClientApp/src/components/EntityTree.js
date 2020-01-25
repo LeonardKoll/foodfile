@@ -2,22 +2,34 @@ import React, {useRef, useEffect} from 'react';
 import * as d3 from "d3";
 import "./EntityTree.css";
 
-function newHierarchyItem (name, member, location, time)
+function newHierarchyItem (type, id, name, member, location, time)
 {
     var displayInfos = [];
+    if (type!=null)     displayInfos.push("[" + type + "] " + id);
+    if (name!=null)     displayInfos.push(name);
     if (member!=null)   displayInfos.push("by " + member);
     if (location!=null) displayInfos.push("at " + location);
     if (time!=null)     displayInfos.push("on " + (new Date (1000 * time)).toLocaleString());
 
     return {
-        name: name,
         info: displayInfos,
         children: []
     }    
 }
 
-function prepareAtomlist (atoms)
+function getPreparedAtoms (entities, rootID)
 {
+    var atoms = null
+    for (var i=0; i<entities.length; i++)
+        if (entities[i].ID === rootID)
+        {
+            atoms = entities[i].Atoms;
+            break;
+        }
+    
+    if (atoms==null)
+        return null;
+
     // Sort Atoms inside Entity to have the latest first.
     atoms.sort(function(atomA, atomB){return atomB.Version - atomA.Version});
 
@@ -32,141 +44,172 @@ function prepareAtomlist (atoms)
         else i++;
     }
 
+    return atoms;
 }
 
-function generateHierarchy (entities, members, rootID) {
-
-    for (var i=0; i<entities.length; i++)
+function getEntityName (atoms, rootID)
+{
+    for (var i=0; i<atoms.length; i++)
     {
-        if (entities[i].ID === rootID)
+        var data = atoms[i].Information;
+        if (data.Case == "Description")
         {
-            var atoms = entities[i].Atoms;
-            prepareAtomlist(atoms);
+            return data.Fields[0].Name;
+        }
+    }
+    return rootID;
+}
 
-            //  to get the Name
-            var entityName = rootID;
-            for (var i=0; i<atoms.length; i++)
-            {
-                var data = atoms[i].Information;
-                if (data.Case == "Description")
-                {
-                    entityName = data.Fields[0].Name;
-                    break;
-                }
-            }
+function getMember (atom, members)
+{
+    var data = atom.Information.Fields[0];
+    var member = null;
+    if (data.Responsible != null)
+    {
+        member = data.Responsible.Fields[0];
+        var found = members.find (c => c.ID == member)
+        if (typeof found !== 'undefined')
+        {
+            member = found.Name;
+        }
+    } 
+    return member
+}
 
-            // Create hierarchy Items
-            var hierarchyChain = []
+function getUnorderedTransfers (entityID, entityName, atoms, members)
+{
+    var transfers = []
+        
+    // Find all Transfer Atoms
+    var completedAtomIDs = []
+    atoms.forEach(atom => { 
+
+        if (atom.Information.Case == "Transfer" && !completedAtomIDs.includes(atom.AtomID))
+        {
+            completedAtomIDs.push(atom.ID);
+            var data = atom.Information.Fields[0];
             
-            // (1) Find all Transfer Atoms
-            var completedAtomIDs = []
-            atoms.forEach(atom => { 
-
-                if (atom.Information.Case == "Transfer" && !completedAtomIDs.includes(atom.AtomID))
-                {
-                    completedAtomIDs.push(atom.ID);
-                    var data = atom.Information.Fields[0];
-                    
-                    // Member
-                    var member = null;
-                    if (data.Responsible != null)
-                    {
-                        member = data.Responsible.Fields[0];
-                        var found = members.find (c => c.ID == member)
-                        if (typeof found !== 'undefined')
-                        {
-                            member = found.Name;
-                        }
-                    } 
-                    
-                    // Location & Tome
-                    var location = null;
-                    var time = null;
-                    var destination = data.TrackPoints.length>0 ? data.TrackPoints[data.TrackPoints.length-1] : null;
-                    if (destination!=null)
-                    {
-                        time = destination.Item2;
-
-                        if (destination.Item1.Name != null)
-                            location = destination.Item1.Name.Fields[0];
-                        else
-                            location = destination.Coordinates
-                    }
-                    
-                    // We do add a Transfer if we don't have a location / timestamp.
-                    if (destination!=null)
-                    {
-                        var transfer = newHierarchyItem (entityName, member, location, time);
-                        transfer.timestamp = time;
-                        hierarchyChain.push (transfer);
-                    }                    
-                }
-
-            });
-
-            // (3) Sort by timestamp: Latest first.
-            hierarchyChain.sort (function(a, b){return b.timestamp - a.timestamp});
-
-            // (4) Find Creation Atom
-            var inEntities = [];
-            var member = null;
+            // Member
+            var member = getMember(atom, members);
+            
+            // Location & Time
             var location = null;
             var time = null;
-
-            for (var i=0; i<atoms.length; i++)
+            var destination = data.TrackPoints.length>0 ? data.TrackPoints[data.TrackPoints.length-1] : null;
+            if (destination!=null)
             {
-                if (atoms[i].Information.Case == "Creation")
-                {
-                    var data = atoms[i].Information.Fields[0];
+                time = destination.Item2;
 
-                    inEntities = data.InEntities;
-                    time = data.Timestamp;
-                    if (data.Responsible != null)
-                    {
-                        member = data.Responsible.Fields[0];
-                        var found = members.find (c => c.ID == member)
-                        if (typeof found !== 'undefined')
-                        {
-                            member = found.Name;
-                        }
-                    }
-                    else member = null;
-                    if (data.Location != null)
-                    {
-                        var locData = data.Location.Fields[0];
-                        location = locData.Name != null ? locData.Name.Fields[0] : locData.Coordinates;
-                    }
-                    else location = null;
-                    
-                    break;
-                }
+                if (destination.Item1.Name != null)
+                    location = destination.Item1.Name.Fields[0];
+                else
+                    location = destination.Coordinates
             }
-
-            // (5) Add findings (even if there arent any) and recursive call
-            var creation = newHierarchyItem (entityName, member, location, time);
-            creation.children = inEntities.map ( entityID => generateHierarchy(entities, members, entityID) );
-            hierarchyChain.push (creation);
-
-            // (6) Generate Return
-            for (var i=0; i<hierarchyChain.length-1; i++)
+            
+            // We do add a Transfer if we don't have a location / timestamp.
+            if (destination!=null)
             {
-                hierarchyChain[i].children = [hierarchyChain[i+1]];
-            }
-            return hierarchyChain[0];
-            // We will always have at least one entry in hierarchyChain:
-            // Creation is added even if there's no actual atom.
+                var transfer = newHierarchyItem ("Transfer", entityID, entityName, member, location, time);
+                transfer.timestamp = time;
+                transfers.push (transfer);
+            }                    
+        }
+    });
+
+    return transfers;
+}
+
+function getCreationAtom (atoms)
+{
+    for (var i=0; i<atoms.length; i++)
+    {
+        if (atoms[i].Information.Case == "Creation")
+        {
+            return atoms[i]
         }
     }
 
-    return newHierarchyItem (rootID, null, null, null);
+    // Add findings (even if there arent any)
+    return null; 
 }
 
-function placeTreeSVG (entities, members, rootID, containerRef)
+function getCreationHierarchyItem (entityID, entityName, creationAtom, members)
+{
+    if (creationAtom==null)
+        return newHierarchyItem ("Creation", entityID, entityName, null, null, null);
+
+    var member = null;
+    var location = null;
+    var time = null;
+    var data = creationAtom.Information.Fields[0];
+
+    time = data.Timestamp;
+    member = getMember(creationAtom, members)
+    if (data.Location != null)
+    {
+        var locData = data.Location.Fields[0];
+        location = locData.Name != null ? locData.Name.Fields[0] : locData.Coordinates;
+    }
+    else location = null;
+    
+    return newHierarchyItem ("Creation", entityID, entityName, member, location, time);
+}
+
+function getOutEntities (entityID, entities)
+{
+    var outEntities = []
+
+    for (var i=0; i<entities.length; i++)
+        if (entities[i].InEntities.includes(entityID))
+            outEntities.push(entities[i].ID);
+    
+    return outEntities;
+}
+
+function generateHierarchy (direction, entities, members, rootID) {
+
+    var atoms = getPreparedAtoms(entities, rootID);
+    if(atoms != null)
+    {
+        var entityName = getEntityName (atoms, rootID)
+        var hierarchyChain = getUnorderedTransfers (rootID, entityName, atoms, members)
+        var creationAtom = getCreationAtom (atoms);
+        var creationHierarchyItem = getCreationHierarchyItem (rootID, entityName, creationAtom, members)
+
+        var followupEntities;
+        if (direction=="upchain")
+        {
+            // Sort by timestamp: Oldest first.
+            hierarchyChain.sort (function(a, b){return a.timestamp - b.timestamp});
+            hierarchyChain.unshift(creationHierarchyItem);
+            followupEntities = getOutEntities (rootID, entities);
+        }
+        else
+        {
+            // Sort by timestamp: Latest first.
+            hierarchyChain.sort (function(a, b){return b.timestamp - a.timestamp});
+            hierarchyChain.push(creationHierarchyItem);
+            followupEntities = (creationAtom==null) ? [] : creationAtom.Information.Fields[0].InEntities;
+        }
+
+        hierarchyChain[hierarchyChain.length-1].children = followupEntities.map ( entityID => generateHierarchy(direction, entities, members, entityID) );
+        
+        // Generate Return
+        for (var i=0; i<hierarchyChain.length-1; i++)
+        {
+            hierarchyChain[i].children = [hierarchyChain[i+1]];
+        }
+        return hierarchyChain[0];
+    }
+    return newHierarchyItem ("Unknown", rootID, null, null, null, null);
+}
+
+function placeTreeSVG (direction, entities, members, rootID, containerRef)
 {   
-    var treeData = generateHierarchy(entities, members, rootID);
+    var treeData = generateHierarchy(direction, entities, members, rootID);
 
     // set the dimensions and margins of the diagram
-    var margin = {top: 40, right: 120, bottom: 80, left: 40};
+    var margin = {top: 40, right: 120, bottom: 100, left: 40};
     var width = containerRef.offsetWidth - margin.left - margin.right;
     var height = 700 - margin.top - margin.bottom;
 
@@ -210,34 +253,38 @@ function placeTreeSVG (entities, members, rootID, containerRef)
         .attr("transform", function(d) { 
             return "translate(" + d.x + "," + d.y + ")";
             });
-
+    
     // adds the circle to the node
     node.append("circle").attr("r", 5);
 
     // adds the text to the node
     node.append("text")
         .attr("y", 20 ).attr("x", 10)
-        .style("font-weight", "bold")
-        .text(function(d) { return d.data.name; });
-    node.append("text")
-        .attr("y", 37).attr("x", 10)
         .text(function(d) { return d.data.info.length > 0 ? d.data.info[0] : "" ; });
     node.append("text")
-        .attr("y", 54).attr("x", 10)
+        .attr("y", 37).attr("x", 10)
+        .style("font-weight", "bold")
         .text(function(d) { return d.data.info.length > 1 ? d.data.info[1] : "" ; });
     node.append("text")
-        .attr("y", 71).attr("x", 10)
+        .attr("y", 54).attr("x", 10)
         .text(function(d) { return d.data.info.length > 2 ? d.data.info[2] : "" ; });
+    node.append("text")
+        .attr("y", 71).attr("x", 10)
+        .text(function(d) { return d.data.info.length > 3 ? d.data.info[3] : "" ; });
+    node.append("text")
+        .attr("y", 88).attr("x", 10)
+        .text(function(d) { return d.data.info.length > 4 ? d.data.info[4] : "" ; });
+
 }
 
-function EntityTree({entities, members, rootID})
+function EntityTree({direction, entities, members, rootID})
 {
     const containerRef = useRef(null);
 
     useEffect(() => {
 
         if (entities.length>0)
-            placeTreeSVG(entities, members, rootID, containerRef.current);  
+            placeTreeSVG(direction, entities, members, rootID, containerRef.current);  
         
         }, [entities.length,members.length]);
         /*

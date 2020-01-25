@@ -55,7 +55,7 @@ function Trace()
                 </div>
             }
 
-            <EntityTree entities={searchresult.Entities} members={searchresult.Members} rootID={searchterm} />
+            <EntityTree direction={direction} entities={searchresult.Entities} members={searchresult.Members} rootID={searchterm} />
             
         </div>
     );

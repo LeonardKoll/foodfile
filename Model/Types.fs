@@ -109,11 +109,27 @@ type Entity = {
     ID:string;
 } with
     
+    // Removes old Versions and Atoms marked as deleted
+    [<JsonIgnore>]
+    member this.ActiveAtoms =
+        // We collect the latest Version for each atom. We then remove all "deleted" Atoms.
+        // If an atom is marked as deleted, it will have the deleted-AtomInformation in it's latest version.
+        this.Atoms
+        |> List.sortByDescending (fun atom -> atom.Version)
+        |> List.fold (fun (state:Atom list) (atom:Atom) ->
+            if List.exists (fun (elem:Atom) -> elem.AtomID=atom.AtomID) state
+            then state else atom::state
+            ) []
+        |> List.filter (fun (atom:Atom) -> 
+            match atom.Information with
+            | Deleted -> false
+            | _ -> true
+            )
+
     // Import for Elasticsearch to allow for efficient upchain queries.
     member this.InEntities =
-        this.Atoms
-        |> List.sortBy (fun (atom:Atom) -> atom.Version)
-        |> List.tryFindBack (fun (atom:Atom) -> 
+        this.ActiveAtoms
+        |> List.tryFind (fun (atom:Atom) -> 
             match atom.Information with
             | Creation _ -> true
             | _ -> false
@@ -125,6 +141,7 @@ type Entity = {
                 | Creation c -> c.InEntities
                 | _ -> []
     
+
     [<JsonIgnore>]
     member this.VerifiedID =
         if this.Atoms.IsEmpty then None
