@@ -3,6 +3,12 @@ import TraceSearch from './TraceSearch';
 import EntityTree from "./EntityTree"
 import axios from 'axios';
 
+function extractEntityID (searchterm)
+{
+    var splitted = searchterm.split("-");
+    return splitted[splitted.length-1];
+}
+
 function Trace()
 {
     const [direction, setDirection] = useState("downchain");
@@ -55,7 +61,7 @@ function Trace()
                 </div>
             }
 
-            <EntityTree direction={direction} entities={searchresult.Entities} members={searchresult.Members} rootID={searchterm} />
+            <EntityTree direction={direction} entities={searchresult.Entities} members={searchresult.Members} rootID={extractEntityID(searchterm)} />
             
         </div>
     );

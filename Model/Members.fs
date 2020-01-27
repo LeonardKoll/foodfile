@@ -4,8 +4,6 @@ open FSharp.Data
 open Newtonsoft.Json
 open Newtonsoft.Json.Linq
 
-// DUMMY
-
 (*
     This module retrieves participant data from FoodFile.org
     and handles in-Memory Caching (later)

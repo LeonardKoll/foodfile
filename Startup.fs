@@ -7,7 +7,8 @@ open Microsoft.Extensions.DependencyInjection
 open Microsoft.Extensions.Hosting
 open Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer
 
-// SPA = Single Page Applications
+// https://stackoverflow.com/questions/44785729/how-do-i-access-command-line-parameters-in-an-asp-net-core-mvc-app
+// https://stackoverflow.com/questions/40917669/why-startups-iconfigurationroot-is-null/40950300#40950300
 
 module Startup =
 
