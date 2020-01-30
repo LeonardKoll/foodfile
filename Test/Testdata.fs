@@ -1,7 +1,6 @@
 ﻿namespace FoodFile
 
 open System
-open Elastic
 
 module Testdata = 
 
@@ -205,7 +204,7 @@ module Testdata =
             
         ]
     }
-
+    (*
     let ExecuteRead = fun () ->
         ["6FGEMO4WX8"]
         |> GetEntitiesLocal
@@ -223,3 +222,4 @@ module Testdata =
         WriteEntity jam3                    |> printf "Write Result: %s"
         WriteEntity jam4                    |> printf "Write Result: %s"
         WriteEntity jam5                    |> printf "Write Result: %s"
+        *)

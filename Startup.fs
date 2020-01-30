@@ -6,24 +6,38 @@ open Microsoft.Extensions.Configuration
 open Microsoft.Extensions.DependencyInjection
 open Microsoft.Extensions.Hosting
 open Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer
+open System.IO
 
 // https://stackoverflow.com/questions/44785729/how-do-i-access-command-line-parameters-in-an-asp-net-core-mvc-app
 // https://stackoverflow.com/questions/40917669/why-startups-iconfigurationroot-is-null/40950300#40950300
+// https://stackoverflow.com/questions/46940710/getting-value-from-appsettings-json-in-net-core
+// https://weblog.west-wind.com/posts/2016/may/23/strongly-typed-configuration-settings-in-aspnet-core
 
 module Startup =
 
     type Startup private () =
-        new (configuration: IConfiguration) as this =
+        new (configuration:IConfiguration) as this =
             Startup() then
             this.Configuration <- configuration
 
         // This method gets called by the runtime. Use this method to add services to the container.
         member this.ConfigureServices(services: IServiceCollection) =
-            // Add framework services.
-            //services.AddControllers() |> ignore
-            services.AddControllersWithViews() |> ignore
-            services.AddSpaStaticFiles (fun configuration -> configuration.RootPath <- "ClientApp/build")
 
+            // .AddNewtonsoftJson(); TODO Das enablen wir mal wenn alles läuft und schauen dann ob man die objektserialisierung entsprechend verbessern kann
+
+            ElasticService.InitIndices (this.Configuration.GetValue<string>("elastic"))
+
+            services.AddScoped<IMemberService, MemberService>() |> ignore
+            services.AddScoped<IElasticService, ElasticService>() |> ignore
+            services.AddScoped<IEntityService, EntityService>() |> ignore
+
+            services.AddControllers() |> ignore
+
+
+            services.AddSpaStaticFiles (fun configuration -> 
+                configuration.RootPath <- "ClientApp/build"
+                )
+            
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         member this.Configure(app: IApplicationBuilder, env: IWebHostEnvironment) =
             if (env.IsDevelopment()) then
@@ -49,11 +63,6 @@ module Startup =
         member val Configuration : IConfiguration = null with get, set
 
 
-    let CreateHostBuilder args =
-        Host.CreateDefaultBuilder(args)
-            .ConfigureWebHostDefaults(fun webBuilder ->
-                webBuilder.UseStartup<Startup>() |> ignore
-            )
 
     [<EntryPoint>]
     let main args =
@@ -64,7 +73,28 @@ module Startup =
                 true
             )
         *)
-        Elastic.InitIndices ()
         //Testdata.ExecuteWrite ()
-        CreateHostBuilder(args).Build().Run()
+
+
+        // AddSingelton = Wird einmal erstellt
+        // AddScoped = Wird einmal pro Verbindung erstellt
+        // AddTransient = Wird einmal pro Anforderung erstellt
+
+        let config = // Eventuell gehts auch ohne, komplett automatisch
+            ConfigurationBuilder()
+                .AddJsonFile("Properties/appSettings.json")
+                .AddCommandLine(args)
+                .Build()
+
+        Host.CreateDefaultBuilder(args)
+            .ConfigureWebHostDefaults(fun webBuilder ->
+                webBuilder.UseConfiguration(config) |> ignore
+                webBuilder.UseStartup<Startup>() |> ignore
+            )
+            
+                (*
+            .ConfigureServices( fun hostContext services ->
+                services.AddScoped<ISchinken, Schinken>() |> ignore
+                )*)
+            .Build().Run()
         0

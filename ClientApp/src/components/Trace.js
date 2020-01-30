@@ -9,7 +9,7 @@ function extractEntityID (searchterm)
     return splitted[splitted.length-1];
 }
 
-function Trace()
+export function Trace()
 {
     const [direction, setDirection] = useState("downchain");
     const [searchterm, setSearchterm] = useState("")
@@ -66,5 +66,3 @@ function Trace()
         </div>
     );
 }
-
-export default Trace;

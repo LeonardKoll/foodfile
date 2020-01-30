@@ -1,7 +1,7 @@
 import React from 'react';
 
 
-export function Footer()
+export function Footer({mode})
 {
 
     return (       
@@ -16,7 +16,10 @@ export function Footer()
                         </p>
                     </div>
                     <div className="col-sm">
-                        <p>You consent to the usage of cookies when using the membership services available at {window.location.origin.toString()}/membership.</p>
+                        {
+                            ((mode=="member") || (mode=="combined")) &&
+                            <p>You consent to the usage of cookies when using the membership services available at {window.location.origin.toString()}/membership.</p>
+                        }
                     </div>
                 </div>
             </div>

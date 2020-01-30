@@ -1,27 +1,60 @@
 ﻿namespace FoodFile
 
-open Elastic
-open Members
 open FSharp.Data
 open Newtonsoft.Json.Linq
 
 type Direction = Downchain | Upchain
 
-module Entities = 
+type IEntityService =
+    abstract member LocalDownchainSearch : (string list -> Entity list)
+    abstract member LocalUpchainSearch : (string list -> Entity list)
+    abstract member CompleteSearch : (Direction -> string option -> string list -> Entity list)
 
-    let private ExtractInEntities = fun (entities:Entity list) ->
+type CompletedRetreival = {
+    MemberID:string;
+    Member:Member option;
+    Entities: string list;
+} with
+    
+    member this.MergeInto = fun (basis:CompletedRetreival list) ->
+        basis
+        |> List.fold (fun (state:(bool * CompletedRetreival list)) cCR ->
+            match state with
+            | (true, result) -> (true, cCR::result)
+            | (false, result) ->
+                if this.MemberID=cCR.MemberID
+                then 
+                    let mergedCR = ( 
+                        match this.Member with
+                        | None ->       {   MemberID=this.MemberID; 
+                                            Member=cCR.Member; 
+                                            Entities= List.distinct(this.Entities@cCR.Entities)}
+                        | Some(m) ->    {   MemberID=this.MemberID; 
+                                            Member=Some(m); 
+                                            Entities= List.distinct(this.Entities@cCR.Entities)}
+                        )
+                    (true, mergedCR::result)
+                else
+                    (false, cCR::result)
+            ) (false,[]) // State: (isMerged, resultlist)
+        |> function
+            | (true, result) -> result          // CR existed already, information merged :)
+            | (false, result) -> this::result   // CR did not exist in list. Add now.
+
+type EntityService (ms:IMemberService,els:IElasticService) = 
+
+    static member ExtractInEntities = fun (entities:Entity list) ->
         entities
         |> List.fold (fun (state:string list) entity ->
             entity.InEntities @ state
             |> List.distinct) []
 
-    let rec private MergeEntities = fun (toMerge:Entity list) (basis:Entity list) ->
+    static member MergeEntities = fun (toMerge:Entity list) (basis:Entity list) ->
         if toMerge.IsEmpty then basis else
         toMerge.Head.MergeInto basis
-        |> MergeEntities toMerge.Tail
+        |> EntityService.MergeEntities toMerge.Tail
 
-    let SearchEntitiesRemote = fun (direction:Direction) (memberAPI:string) (entityIDs:string list) ->
-        printfn "imput entities: %A" entityIDs
+    static member private SearchEntitiesRemote = fun (direction:Direction) (memberAPI:string) (entityIDs:string list) ->
         async {
             
             let url = 
@@ -43,29 +76,34 @@ module Entities =
                 >> List.filter( fun entity -> entity.Verify )) result
         }
 
-    let rec private ExecuteLocalDownchainSearch (doneIDs:string list) (result:Entity list) (openIDs:string list) = 
+    static member private MergeCRs = fun (toMerge:CompletedRetreival list) (basis:CompletedRetreival list) ->
+        if toMerge.IsEmpty then basis else
+        toMerge.Head.MergeInto basis
+        |> EntityService.MergeCRs toMerge.Tail 
+
+    member this.ExecuteLocalDownchainSearch (doneIDs:string list) (result:Entity list) (openIDs:string list) = 
         if openIDs.IsEmpty then result else
         let doneAfterIDs = doneIDs @ openIDs
         openIDs
-        |> Elastic.GetEntitiesLocal
+        |> els.GetEntitiesLocal
         |> function
             | [] -> result
             | entities -> 
-                ExtractInEntities entities
+                EntityService.ExtractInEntities entities
                 // Remove those we already did and those already on our ToDo
                 |> List.filter (fun id -> not(List.exists (fun elem -> id=elem) doneAfterIDs))
-                |> ExecuteLocalDownchainSearch doneAfterIDs (result @ entities) 
+                |> this.ExecuteLocalDownchainSearch doneAfterIDs (result @ entities)
         (*
             The openIDs is necessary because in some cases, the search might be triggered
             with multiple openIDs elements. During execution, we might find entities which 
             are also on the open list, but we want to prevent to search twice.
         *)
 
-    let rec private ExecuteLocalUpchainSearch (doneIDs:string list) (result:Entity list) (openIDs:string list) =
+    member this.ExecuteLocalUpchainSearch (doneIDs:string list) (result:Entity list) (openIDs:string list) =
         if openIDs.IsEmpty then result else
         let doneAfterIDs = doneIDs @ openIDs
         openIDs
-        |> Elastic.GetByInEntities
+        |> els.GetByInEntities
         |> function
             | [] -> result
             | entities ->
@@ -73,59 +111,24 @@ module Entities =
                 |> List.map (fun entity -> entity.ID)
                 // Remove those we already did and those already on our ToDo
                 |> List.filter (fun id -> not(List.exists (fun elem -> id=elem) doneAfterIDs))
-                |> ExecuteLocalUpchainSearch doneAfterIDs (result @ entities)
-
-    type CompletedRetreival = {
-        MemberID:string;
-        Member:Member option;
-        Entities: string list;
-    } with
-        
-        member this.MergeInto = fun (basis:CompletedRetreival list) ->
-            basis
-            |> List.fold (fun (state:(bool * CompletedRetreival list)) cCR ->
-                match state with
-                | (true, result) -> (true, cCR::result)
-                | (false, result) ->
-                    if this.MemberID=cCR.MemberID
-                    then 
-                        let mergedCR = ( 
-                            match this.Member with
-                            | None ->       {   MemberID=this.MemberID; 
-                                                Member=cCR.Member; 
-                                                Entities= List.distinct(this.Entities@cCR.Entities)}
-                            | Some(m) ->    {   MemberID=this.MemberID; 
-                                                Member=Some(m); 
-                                                Entities= List.distinct(this.Entities@cCR.Entities)}
-                            )
-                        (true, mergedCR::result)
-                    else
-                        (false, cCR::result)
-                ) (false,[]) // State: (isMerged, resultlist)
-            |> function
-                | (true, result) -> result          // CR existed already, information merged :)
-                | (false, result) -> this::result   // CR did not exist in list. Add now.
+                |> this.ExecuteLocalUpchainSearch doneAfterIDs (result @ entities) 
             
-    let rec private MergeCRs = fun (toMerge:CompletedRetreival list) (basis:CompletedRetreival list) ->
-        if toMerge.IsEmpty then basis else
-        toMerge.Head.MergeInto basis
-        |> MergeCRs toMerge.Tail 
 
-    let private FillCRsAPIs = fun (crs:CompletedRetreival list) ->
+    member this.FillCRsAPIs = fun (crs:CompletedRetreival list) ->
         crs
         |> List.filter ( fun cr -> cr.Member=None )
         |> List.map ( fun ct -> ct.MemberID )
-        |> GetMembersRemote
+        |> ms.GetMembersRemote
         |> List.map ( fun (m) -> {MemberID=m.ID; Member=Some(m); Entities=[]} )
-        |> MergeCRs crs
+        |> EntityService.MergeCRs crs
 
-    let rec private ExecuteCompleteSearch = fun (result:Entity list) (crs: CompletedRetreival list ) (direction:Direction) (allIDs:string list) ->
+    member this.ExecuteCompleteSearch = fun (result:Entity list) (crs: CompletedRetreival list ) (direction:Direction) (allIDs:string list) ->
              
         printfn "allIDs: %A" allIDs
         printfn "doneIDs: %A" crs
 
         let cleanedCRS = 
-            (FillCRsAPIs
+            (this.FillCRsAPIs
             >> List.filter ( fun (cr:CompletedRetreival) -> not (cr.Member=None) )) crs
         
         cleanedCRS
@@ -139,7 +142,7 @@ module Entities =
                 printfn "todoIDs: %A" todoIDs
 
                 // Execute request Async
-                let! entities = SearchEntitiesRemote direction cr.Member.Value.API todoIDs
+                let! entities = EntityService.SearchEntitiesRemote direction cr.Member.Value.API todoIDs
                 // On method call, MemberURL will always be Some bc we cleaned the CRS list before this call.
 
                 return (cr.MemberID, entities)
@@ -153,14 +156,14 @@ module Entities =
                 match direction with
                 | Downchain ->
                     entities
-                    |> ExtractInEntities            
+                    |> EntityService.ExtractInEntities            
                 | Upchain ->
                     entities
                     |> List.map (fun entity -> entity.ID)
                 |> List.filter (fun id -> not (List.exists (fun elem -> id=elem) allIDs))
 
             let followupP = 
-                (ExtractMemberIDs  
+                (MemberService.ExtractMemberIDs  
                 >> List.filter (fun foundP -> 
                     not (List.exists (fun (cr:CompletedRetreival) -> foundP=cr.MemberID) cleanedCRS)) ) entities
             
@@ -168,12 +171,12 @@ module Entities =
                 not (followupP.IsEmpty && followupE.IsEmpty)
 
             let mergedE_new =
-                MergeEntities entities mergedE
+                EntityService.MergeEntities entities mergedE
 
             let mergedCRS_new = 
                 (List.map ( fun pID -> {MemberID=pID; Member=None; Entities=[]})
-                >> MergeCRs [{MemberID=source; Member=None; Entities=(allIDs@followupE)}]
-                >> MergeCRs mergedCRS) followupP
+                >> EntityService.MergeCRs [{MemberID=source; Member=None; Entities=(allIDs@followupE)}]
+                >> EntityService.MergeCRs mergedCRS) followupP
             (*
                 In order to merge the Done-Lists we need to
                 - extract the participants resulting from the new entities
@@ -191,7 +194,7 @@ module Entities =
             ) (false, result, crs, allIDs)
         |> function
             | (false, mergedE, _, _) -> mergedE
-            | (true, mergedE, mergedDone, mergedAll) -> ExecuteCompleteSearch mergedE mergedDone direction mergedAll
+            | (true, mergedE, mergedDone, mergedAll) -> this.ExecuteCompleteSearch mergedE mergedDone direction mergedAll
         (*
             doneIDs has the same purpose as in ExecuteSearchLocal. However, it is by participant here: (participant-ID, participant-URL, [done Entities])
             We do not maintain openIDs when we go down recursively but allIDs.
@@ -209,29 +212,29 @@ module Entities =
             adding entities or other participants.
         *)
 
-    let LocalDownchainSearch = ExecuteLocalDownchainSearch [] []
+    interface IEntityService with
 
-    let LocalUpchainSearch = fun (entityIDs:string list) ->
-        entityIDs
-        |> GetEntitiesLocal
-        |> fun initials -> ExecuteLocalUpchainSearch [] initials entityIDs
+        member this.LocalDownchainSearch = this.ExecuteLocalDownchainSearch [] []
+
+        member this.LocalUpchainSearch = fun (entityIDs:string list) ->
+            entityIDs
+            |> els.GetEntitiesLocal
+            |> fun initials -> this.ExecuteLocalUpchainSearch [] initials entityIDs
         
 
-    let CompleteSearch = fun (direction:Direction) (memberID:string option) (entityIDs:string list) ->
-        match (memberID, thisInstance) with
-        | (None, None) -> []
-        | (None, Some ti ) ->
-            ExecuteCompleteSearch [] [
-                {MemberID=ti.ID; Member=Some(ti); Entities=[]}
-            ] direction entityIDs
-        | (Some pID, None) ->
-            ExecuteCompleteSearch [] [
-                {MemberID=pID; Member=None; Entities=[]}
-            ] direction entityIDs
-        | (Some pID, Some ti) ->
-            ExecuteCompleteSearch [] [
-                {MemberID=ti.ID; Member=Some(ti); Entities=[]};
-                {MemberID=pID; Member=None; Entities=[]}
-            ] direction entityIDs
-
-   
+        member this.CompleteSearch = fun (direction:Direction) (memberID:string option) (entityIDs:string list) ->
+            match (memberID, ms.ThisInstance) with
+            | (None, None) -> []
+            | (None, Some ti ) ->
+                this.ExecuteCompleteSearch [] [
+                    {MemberID=ti.ID; Member=Some(ti); Entities=[]}
+                ] direction entityIDs
+            | (Some pID, None) ->
+                this.ExecuteCompleteSearch [] [
+                    {MemberID=pID; Member=None; Entities=[]}
+                ] direction entityIDs
+            | (Some pID, Some ti) ->
+                this.ExecuteCompleteSearch [] [
+                    {MemberID=ti.ID; Member=Some(ti); Entities=[]};
+                    {MemberID=pID; Member=None; Entities=[]}
+                ] direction entityIDs

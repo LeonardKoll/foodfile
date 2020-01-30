@@ -4,8 +4,8 @@ open Microsoft.AspNetCore.Mvc
 open Newtonsoft.Json
 open Newtonsoft.Json.Linq
 open System
-open Elastic
 open Types
+open Microsoft.Extensions.Configuration
 
 type DeleteMember = {
     ID: string; // 6 Zeichen
@@ -15,20 +15,25 @@ type DeleteMember = {
 
 [<ApiController>]
 [<Route("api/[controller]")>]
-type MembersController () =
+type MembersController (es:IElasticService, config:IConfiguration) =
     inherit ControllerBase()
+
+    let disabled = config.GetValue<string>("mode") = "regular"
 
     [<HttpGet("{id}")>] // Jetzt wo hier string als return steht müssen wir ContentType JSon evtl manuell setzen.
     member __.Get([<FromQuery>] id:string array) : string = //Multiple
+        if disabled then (raise (Exception "Disabled")) else
         id
         |> Array.toList
-        |> Elastic.GetMembersLocal
+        |> es.GetMembersLocal
         |> List.map (fun memb -> memb.Publish)
         |> JsonConvert.SerializeObject
         // ToDo: Error Handling.
 
     [<HttpPost>]
     member __.Create([<FromBody>] body:Object ) : string =
+
+        if disabled then (raise (Exception "Disabled")) else
 
         let memb = 
             (JObject.Parse
@@ -39,16 +44,16 @@ type MembersController () =
         |> function
             | "" -> 
                 let memberID = newMemberID
-                {memb with ID=memberID} |> WriteMember |> ignore
+                {memb with ID=memberID} |> es.WriteMember |> ignore
                 Result ("Created new member with ID " + memberID.ToString())
             | id -> 
-                Elastic.GetMemberLocal id
+                es.GetMemberLocal id
                 |> function
                     | None -> Error "ID provided but member not found. Provide empty string for creation of new members."
                     | Some (result) -> 
                         match result.Password=memb.Password with
                         | true -> 
-                            WriteMember memb |> ignore
+                            es.WriteMember memb |> ignore
                             Result ("Edited member with ID " + id.ToString())
                         | false -> 
                             Error "Passwort does not match."
@@ -62,6 +67,8 @@ type MembersController () =
     [<HttpDelete>]
     member __.Delete([<FromBody>] toDelete:Object) : string =
 
+        if disabled then (raise (Exception "Disabled")) else
+
         let memb = 
             (JObject.Parse
             >> (fun result -> result.ToObject<DeleteMember>())
@@ -69,13 +76,13 @@ type MembersController () =
 
 
         memb.ID
-        |> Elastic.GetMemberLocal
+        |> es.GetMemberLocal
         |> function
             | None -> Error "Member not found."
             | Some result ->
                 match result.Password=memb.Password with
                     | true -> 
-                        DeleteMember memb.ID |> ignore
+                        es.DeleteMember memb.ID |> ignore
                         Result ("Deleted member with ID " + memb.ID.ToString())
                     | false -> 
                         Error "Passwort does not match."      
