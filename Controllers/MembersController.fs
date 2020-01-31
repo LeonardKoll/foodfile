@@ -15,14 +15,12 @@ type DeleteMember = {
 
 [<ApiController>]
 [<Route("api/[controller]")>]
+[<EnableInMode([|"member";"combined"|])>]
 type MembersController (es:IElasticService, config:IConfiguration) =
     inherit ControllerBase()
 
-    let disabled = config.GetValue<string>("mode") = "regular"
-
     [<HttpGet("{id}")>] // Jetzt wo hier string als return steht müssen wir ContentType JSon evtl manuell setzen.
     member __.Get([<FromQuery>] id:string array) : string = //Multiple
-        if disabled then (raise (Exception "Disabled")) else
         id
         |> Array.toList
         |> es.GetMembersLocal
@@ -32,8 +30,6 @@ type MembersController (es:IElasticService, config:IConfiguration) =
 
     [<HttpPost>]
     member __.Create([<FromBody>] body:Object ) : string =
-
-        if disabled then (raise (Exception "Disabled")) else
 
         let memb = 
             (JObject.Parse
@@ -67,8 +63,6 @@ type MembersController (es:IElasticService, config:IConfiguration) =
     [<HttpDelete>]
     member __.Delete([<FromBody>] toDelete:Object) : string =
 
-        if disabled then (raise (Exception "Disabled")) else
-
         let memb = 
             (JObject.Parse
             >> (fun result -> result.ToObject<DeleteMember>())
@@ -88,3 +82,6 @@ type MembersController (es:IElasticService, config:IConfiguration) =
                         Error "Passwort does not match."      
         // In any case, we will eventually output the result.
         |> JsonConvert.SerializeObject
+
+    interface IConfigurableController with
+        member this.config = config

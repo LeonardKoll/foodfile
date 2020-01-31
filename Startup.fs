@@ -7,6 +7,7 @@ open Microsoft.Extensions.DependencyInjection
 open Microsoft.Extensions.Hosting
 open Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer
 open System.IO
+open System.Threading
 
 // https://stackoverflow.com/questions/44785729/how-do-i-access-command-line-parameters-in-an-asp-net-core-mvc-app
 // https://stackoverflow.com/questions/40917669/why-startups-iconfigurationroot-is-null/40950300#40950300
@@ -23,8 +24,6 @@ module Startup =
         // This method gets called by the runtime. Use this method to add services to the container.
         member this.ConfigureServices(services: IServiceCollection) =
 
-            // .AddNewtonsoftJson(); TODO Das enablen wir mal wenn alles läuft und schauen dann ob man die objektserialisierung entsprechend verbessern kann
-
             ElasticService.InitIndices (this.Configuration.GetValue<string>("elastic"))
 
             services.AddScoped<IMemberService, MemberService>() |> ignore
@@ -32,7 +31,6 @@ module Startup =
             services.AddScoped<IEntityService, EntityService>() |> ignore
 
             services.AddControllers() |> ignore
-
 
             services.AddSpaStaticFiles (fun configuration -> 
                 configuration.RootPath <- "ClientApp/build"
@@ -66,16 +64,7 @@ module Startup =
 
     [<EntryPoint>]
     let main args =
-        (*
-        Members.members
-        |> List.forall (fun memb ->
-                Elastic.WriteMember memb |> ignore
-                true
-            )
-        *)
-        //Testdata.ExecuteWrite ()
-
-
+        
         // AddSingelton = Wird einmal erstellt
         // AddScoped = Wird einmal pro Verbindung erstellt
         // AddTransient = Wird einmal pro Anforderung erstellt
@@ -86,15 +75,14 @@ module Startup =
                 .AddCommandLine(args)
                 .Build()
 
+        // Interactions with Elasticsearch will fail right after startup of the ES container.
+        Thread.Sleep (1000 * config.GetValue<int>("delay"))
+
         Host.CreateDefaultBuilder(args)
             .ConfigureWebHostDefaults(fun webBuilder ->
                 webBuilder.UseConfiguration(config) |> ignore
                 webBuilder.UseStartup<Startup>() |> ignore
             )
-            
-                (*
-            .ConfigureServices( fun hostContext services ->
-                services.AddScoped<ISchinken, Schinken>() |> ignore
-                )*)
             .Build().Run()
+
         0

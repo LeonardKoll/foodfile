@@ -13,15 +13,12 @@ type ReturnInfo = {
 
 [<ApiController>]
 [<Route("api/entities/[controller]")>]
+[<EnableInMode([|"regular";"combined"|])>]
 type GlobalController (ms:IMemberService,els:IElasticService, ens:IEntityService, config:IConfiguration) =
     inherit ControllerBase()
 
-    let disabled = config.GetValue<string>("mode") = "member"
-
     [<HttpGet("downchain/{id}")>] // Jetzt wo hier string als return steht müssen wir ContentType JSon evtl manuell setzen.
     member __.GetDownchain (id:string) : string = // Member ID optional
-        
-        if disabled then (raise (Exception "Disabled")) else
 
         let entities =
             (function
@@ -37,8 +34,6 @@ type GlobalController (ms:IMemberService,els:IElasticService, ens:IEntityService
 
     [<HttpGet("upchain/{id}")>] // Jetzt wo hier string als return steht müssen wir ContentType JSon evtl manuell setzen.
     member __.GetUpchain (id:string) : string = // Member ID optional  
-        
-        if disabled then (raise (Exception "Disabled")) else
 
         let entities =
             (function
@@ -51,3 +46,6 @@ type GlobalController (ms:IMemberService,els:IElasticService, ens:IEntityService
         |> JsonConvert.SerializeObject
         // ToDo: Error Handling.
         // Note: Die Funktion kann evtl weg weil wir immer Atome aber nicht ganze Docs transferieren
+
+    interface IConfigurableController with
+        member this.config = config

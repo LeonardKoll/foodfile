@@ -22,6 +22,7 @@
     <Compile Include="Model\MemberService.fs" />
     <Compile Include="Model\ElasticService.fs" />
     <Compile Include="Model\EntityService.fs" />
+    <Compile Include="Controllers\ActionFilter.fs" />
     <Compile Include="Controllers\ModeController.fs" />
     <Compile Include="Controllers\MembersController.fs" />
     <Compile Include="Controllers\LocalController.fs" />

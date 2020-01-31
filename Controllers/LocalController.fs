@@ -9,29 +9,24 @@ open Microsoft.Extensions.Configuration
 
 [<ApiController>]
 [<Route("api/entities/[controller]")>]
+[<EnableInMode([|"regular";"combined"|])>]
 type LocalController (els:IElasticService, ens:IEntityService, config:IConfiguration) =
     inherit ControllerBase()
 
-    let disabled = config.GetValue<string>("mode") = "member"
-
     [<HttpGet("downchain/{id}")>] // Jetzt wo hier string als return steht müssen wir ContentType JSon evtl manuell setzen.
     member __.GetDownchain([<FromQuery>] id:string array) : string = //Multiple
-        if disabled then (raise (Exception "Disabled")) else
         ens.LocalDownchainSearch (Array.toList id)
         |> JsonConvert.SerializeObject
         // ToDo: Error Handling.
 
     [<HttpGet("upchain/{id}")>] // Jetzt wo hier string als return steht müssen wir ContentType JSon evtl manuell setzen.
     member __.GetUpchain([<FromQuery>] id:string array) : string = //Multiple
-        if disabled then (raise (Exception "Disabled")) else
         ens.LocalUpchainSearch (Array.toList id)
         |> JsonConvert.SerializeObject
         // ToDo: Error Handling.
 
     [<HttpPost>]
     member __.Create([<FromBody>] body:Object ) : string =
-
-        if disabled then (raise (Exception "Disabled")) else
         
         let inputAtoms = 
             (JArray.Parse
@@ -100,3 +95,5 @@ type LocalController (els:IElasticService, ens:IEntityService, config:IConfigura
         
         // ToDO: Error Handling.
 
+    interface IConfigurableController with
+        member this.config = config
