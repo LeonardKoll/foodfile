@@ -71,7 +71,7 @@ module Startup =
 
         let config = // Eventuell gehts auch ohne, komplett automatisch
             ConfigurationBuilder()
-                .AddJsonFile("Properties/appSettings.json")
+                .AddJsonFile("appSettings.json")
                 .AddCommandLine(args)
                 .Build()
 
