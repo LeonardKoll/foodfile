@@ -10,13 +10,6 @@ open Microsoft.Extensions.Configuration
     and handles in-Memory Caching (later)
 *)
 
-(*
-let freshfruitfarmers = {ID="IK7TEO"; Name="FreshFruitFarmers"; API="https://localhost:5001/api/entities/local/"; Password="123"}
-let sugarsilo = {ID="UC2NRQ"; Name="SugarSilo"; API="https://localhost:5001/api/entities/local/"; Password="123"}
-let yummyjam = {ID="8X55N4"; Name="YummyJam"; API="https://localhost:5001/api/entities/local/"; Password="123"}
-let members = [freshfruitfarmers;sugarsilo;yummyjam]
-*)
-
 type IMemberService =
     abstract member GetMembersRemote : (string list -> Member list)
     abstract member GetMemberRemote : (string -> Member option)

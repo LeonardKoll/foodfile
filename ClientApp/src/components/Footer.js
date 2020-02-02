@@ -1,7 +1,7 @@
 import React from 'react';
 
 
-export function Footer({mode})
+export function Footer({mode, memberID, memberName})
 {
 
     return (       
@@ -17,8 +17,8 @@ export function Footer({mode})
                     </div>
                     <div className="col-sm">
                         {
-                            (((mode.Mode=="regular") || (mode.Mode=="combined")) && (mode.MemberID != "")) &&
-                            <p className="float-right">Member {mode.MemberID}<br></br>{mode.MemberName}</p>
+                            (((mode=="regular") || (mode=="combined")) && (mode.MemberID != "")) &&
+                            <p className="float-right">Member {memberID}<br></br>{memberName}</p>
                         }
                     </div>
                 </div>

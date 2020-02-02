@@ -76,7 +76,7 @@ module Startup =
                 .Build()
 
         // Interactions with Elasticsearch will fail right after startup of the ES container.
-        Thread.Sleep (1000 * config.GetValue<int>("delay"))
+        //Thread.Sleep (1000 * config.GetValue<int>("delay"))
 
         Host.CreateDefaultBuilder(args)
             .ConfigureWebHostDefaults(fun webBuilder ->

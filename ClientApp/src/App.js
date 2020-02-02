@@ -14,29 +14,35 @@ import './custom.css'
 
 function App() {
 
-  const [mode, setMode] = useState({Mode:"none", MemberID:"", MemberName:""})
+  const [mode, setMode] = useState("none")
+  const [memberID, setMemberID] = useState("")
+  const [memberName, setMemberName] = useState("")
 
   axios.get('/api/mode/')
   .then (response =>  {
-    setMode(response.data);
+    setMode(response.data.Mode);
+    setMemberID(response.data.MemberID);
+    setMemberName(response.data.MemberName);
   }).catch (err => {
-    setMode({Mode:"none", MemberID:"", MemberName:""});
+    setMode("none");
+    setMemberID("");
+    setMemberName("");
   });
 
   return (
-    <Layout mode={mode} >
+    <Layout mode={mode} memberID={memberID} memberName={memberName} >
         <Route exact path='/' component={Home} />
         <Route path='/developers' component={Developers} />
         {
-          ((mode.Mode=="member") || (mode.Mode=="combined")) &&
+          ((mode=="member") || (mode=="combined")) &&
           <Route path='/membership' component={Membership} />
         }
         {
-          ((mode.Mode=="regular") || (mode.Mode=="combined"))  &&
+          ((mode=="regular") || (mode=="combined"))  &&
           <Route path='/trace' component={Trace} />
         }
         {
-          ((mode.Mode=="regular") || (mode.Mode=="combined")) &&
+          ((mode=="regular") || (mode=="combined")) &&
           <Route path='/capture' component={Capture} />
         }
         <Route path='/legal' component={Legal} />

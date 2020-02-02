@@ -20,19 +20,19 @@ export function NavMenu ({mode})
                   <NavLink tag={Link} className="text-dark" to="/developers">Developers</NavLink>
                 </NavItem>
                 {
-                  ((mode.Mode=="member") || (mode.Mode=="combined")) &&
+                  ((mode=="member") || (mode=="combined")) &&
                   <NavItem>
                     <NavLink tag={Link} className="text-dark" to="/membership">Membership</NavLink>
                   </NavItem>
                 }
                 {
-                  ((mode.Mode=="regular") || (mode.Mode=="combined")) &&
+                  ((mode=="regular") || (mode=="combined")) &&
                   <NavItem>
                     <NavLink tag={Link} className="text-dark" to="/trace">Trace</NavLink>
                   </NavItem>
                 }
                 {
-                  ((mode.Mode=="regular") || (mode.Mode=="combined")) &&
+                  ((mode=="regular") || (mode=="combined")) &&
                   <NavItem>
                     <NavLink tag={Link} className="text-dark" to="/capture">Capture</NavLink>
                   </NavItem>

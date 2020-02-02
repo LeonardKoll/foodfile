@@ -3,15 +3,15 @@ import { Container } from 'reactstrap';
 import { NavMenu } from './NavMenu';
 import { Footer } from './Footer'
 
-export function Layout ({mode, children})
+export function Layout ({mode, memberID, memberName, children})
 {
   return (
     <div>
-      <NavMenu mode={mode} />
+      <NavMenu  mode={mode} />
       <Container>
         {children}
       </Container>
-      <Footer mode={mode} />
+      <Footer mode={mode} memberID={memberID} memberName={memberName} />
     </div>
   );
 }

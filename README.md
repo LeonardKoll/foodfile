@@ -17,4 +17,4 @@ Specifies the URL to the trusted membership provider. The provided URL is used i
 Specifies the Elasticsearch URL. Defaults to http://elasticsearch:9200/.
 
 ### --delay
-Specifies a startup delay in seconds for the FoodFile application. Elasticsearch does not properly respond to requests right after startup. When executed simultaneously (as with docker-compose), the delay ensures that elasticsearch is ready when FoodFile sends the first request. Defaults to 10.
+Specifies a startup delay in seconds for the FoodFile application. Elasticsearch does not properly respond to requests right after startup. When executed simultaneously (as with docker-compose), the delay ensures that elasticsearch is ready when FoodFile sends the first request. Defaults to 60.
