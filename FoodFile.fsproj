@@ -27,7 +27,6 @@
     <Compile Include="Controllers\MembersController.fs" />
     <Compile Include="Controllers\LocalController.fs" />
     <Compile Include="Controllers\GlobalController.fs" />
-    <Compile Include="Test\Testdata.fs" />
     <Compile Include="Startup.fs" />
   </ItemGroup>
 
