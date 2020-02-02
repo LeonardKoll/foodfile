@@ -29,12 +29,12 @@ type ElasticService(config:IConfiguration) =
     static let ByIDsQuery = "{\"from\":0,\"size\":10000,\"query\": {\"ids\" : {\"values\" : #IDs }}}"
     static let ByInEntitiesQuery = "{\"from\":0,\"size\":10000,\"query\": {\"bool\": {\"filter\": {\"terms\": {\"InEntities\": #IDs }}}}}"
 
-    static member InitIndices = fun (host:string) ->
+    static member InitIndices = fun (host:string) (creationCmd:string) ->
         try
-            Http.RequestString ( host + EntityIndex, httpMethod = "PUT") |> ignore
+            Http.RequestString ( host + EntityIndex, httpMethod = "PUT", body = TextRequest creationCmd) |> ignore
         with _ -> ()
         try
-            Http.RequestString ( host + MemberIndex, httpMethod = "PUT") |> ignore
+            Http.RequestString ( host + MemberIndex, httpMethod = "PUT", body = TextRequest creationCmd) |> ignore
         with _ -> ()
 
     member private this.GetDocuments = fun (query:string) (index:string) (ids:string list) ->

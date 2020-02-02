@@ -24,7 +24,8 @@ module Startup =
         // This method gets called by the runtime. Use this method to add services to the container.
         member this.ConfigureServices(services: IServiceCollection) =
 
-            ElasticService.InitIndices (this.Configuration.GetValue<string>("elastic"))
+            
+            ElasticService.InitIndices (this.Configuration.GetValue<string>("elastic")) (this.Configuration.GetValue<string>("esindexcreationcmd"))
 
             services.AddScoped<IMemberService, MemberService>() |> ignore
             services.AddScoped<IElasticService, ElasticService>() |> ignore
