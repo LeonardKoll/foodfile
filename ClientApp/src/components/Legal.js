@@ -6,7 +6,7 @@ export function Legal()
         <div>
             <img className="img-fluid" src="/img/legal_cover.jpg"></img>
             
-            <h1 className="mt-5 mb-3">Responsible</h1>
+            <h1 className="mt-5 mb-5">Responsible</h1>
             <p>Leonard Koll
             <br></br>
             Merianstr. 25, 54292 Trier

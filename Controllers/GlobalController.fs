@@ -6,7 +6,7 @@ open Microsoft.Extensions.Configuration
 open System
 
 
-type ReturnInfo = {
+type GcReturn = {
     Entities:Entity list;
     Members:Member list;
 }

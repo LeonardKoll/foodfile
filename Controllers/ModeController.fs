@@ -2,12 +2,22 @@
 
 open Microsoft.AspNetCore.Mvc
 open Microsoft.Extensions.Configuration
+open Newtonsoft.Json
+
+type ModeReturn = {
+    Mode:string; // member, regular, combined
+    MemberID:string;
+    MemberName:string;
+}
 
 [<ApiController>]
 [<Route("api/[controller]")>]
-type ModeController (config:IConfiguration) =
+type ModeController (config:IConfiguration, ms:IMemberService) =
     inherit ControllerBase()
 
     [<HttpGet()>] // Jetzt wo hier string als return steht müssen wir ContentType JSon evtl manuell setzen.
     member __.Get() : string =
-        config.GetValue<string>("mode") // member, regular, combined
+        match ms.ThisInstance with
+            | None -> {Mode=config.GetValue<string>("mode"); MemberID=""; MemberName=""}
+            | Some m -> {Mode=config.GetValue<string>("mode"); MemberID=m.ID; MemberName=m.Name}
+        |> JsonConvert.SerializeObject

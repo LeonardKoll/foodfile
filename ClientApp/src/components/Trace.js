@@ -36,7 +36,7 @@ export function Trace()
     return (       
         <div>
             <img className="img-fluid" src="/img/trace_cover.jpg"></img>
-            <h1 className="mt-5 mb-3">Trace</h1>
+            <h1 className="mt-5 mb-5">Trace</h1>
             <p>
                 FoodFile starts your retrival automatically as soon as you enter a valid trace code and opt for a search type.
                 The trace code should have the form indicated below, with the first six digits being optional.

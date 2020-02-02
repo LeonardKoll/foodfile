@@ -14,13 +14,13 @@ import './custom.css'
 
 function App() {
 
-  const [mode, setMode] = useState("none")
+  const [mode, setMode] = useState({Mode:"none", MemberID:"", MemberName:""})
 
   axios.get('/api/mode/')
   .then (response =>  {
     setMode(response.data);
   }).catch (err => {
-    setMode("none");
+    setMode({Mode:"none", MemberID:"", MemberName:""});
   });
 
   return (
@@ -28,15 +28,15 @@ function App() {
         <Route exact path='/' component={Home} />
         <Route path='/developers' component={Developers} />
         {
-          ((mode=="member") || (mode=="combined")) &&
+          ((mode.Mode=="member") || (mode.Mode=="combined")) &&
           <Route path='/membership' component={Membership} />
         }
         {
-          ((mode=="regular") || (mode=="combined"))  &&
+          ((mode.Mode=="regular") || (mode.Mode=="combined"))  &&
           <Route path='/trace' component={Trace} />
         }
         {
-          ((mode=="regular") || (mode=="combined")) &&
+          ((mode.Mode=="regular") || (mode.Mode=="combined")) &&
           <Route path='/capture' component={Capture} />
         }
         <Route path='/legal' component={Legal} />

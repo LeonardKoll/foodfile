@@ -48,11 +48,7 @@ type MemberService(config:IConfiguration) =
                     memberIDs
                     |> List.map ( fun id -> "id=" + id )
                     |> String.concat "&"
-                    |> (fun arguments -> 
-                        let test = MembershipProvider + "Multiple?" + arguments
-                        printfn "%s" test
-                        test
-                        )
+                    |> fun arguments -> MembershipProvider + "Multiple?" + arguments
                     |> Http.RequestString //ToDo: Error Handling. Log errors somewhere end return empty list.
                     |> JArray.Parse // Errors may also occur here.
                     |> fun parsed -> parsed.ToObject<Member list>()

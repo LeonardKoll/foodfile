@@ -61,14 +61,10 @@ type EntityService (ms:IMemberService,els:IElasticService) =
                 (List.map ( fun id -> "id=" + id )
                 >> String.concat "&"
                 >> (fun arguments -> memberAPI + direction.ToString() + "/Multiple?" + arguments)) entityIDs
-            
-            printfn "%s" url
 
             let! result = Http.AsyncRequestString url 
             //ToDo: Error Handling. Log errors somewhere end return empty list.
             // Wenn eine url nicht stimmt crasht hier aktuell alles
-            
-            printfn "result %s" (result.ToString())
 
             return 
                 (JArray.Parse // Errors may also occur here.
@@ -123,9 +119,6 @@ type EntityService (ms:IMemberService,els:IElasticService) =
         |> EntityService.MergeCRs crs
 
     member this.ExecuteCompleteSearch = fun (result:Entity list) (crs: CompletedRetreival list ) (direction:Direction) (allIDs:string list) ->
-             
-        printfn "allIDs: %A" allIDs
-        printfn "doneIDs: %A" crs
 
         let cleanedCRS = 
             (this.FillCRsAPIs
@@ -138,8 +131,6 @@ type EntityService (ms:IMemberService,els:IElasticService) =
                 // Compute ToDos for this Participant
                 let todoIDs = 
                     List.filter (fun id -> not(List.exists (fun doneID -> id=doneID) cr.Entities) ) allIDs
-
-                printfn "todoIDs: %A" todoIDs
 
                 // Execute request Async
                 let! entities = EntityService.SearchEntitiesRemote direction cr.Member.Value.API todoIDs

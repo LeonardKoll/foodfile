@@ -17,8 +17,8 @@ export function Footer({mode})
                     </div>
                     <div className="col-sm">
                         {
-                            ((mode=="member") || (mode=="combined")) &&
-                            <p>You consent to the usage of cookies when using the membership services available at {window.location.origin.toString()}/membership.</p>
+                            (((mode.Mode=="regular") || (mode.Mode=="combined")) && (mode.MemberID != "")) &&
+                            <p className="float-right">Member {mode.MemberID}<br></br>{mode.MemberName}</p>
                         }
                     </div>
                 </div>
