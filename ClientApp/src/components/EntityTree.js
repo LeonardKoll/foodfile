@@ -21,11 +21,13 @@ function getPreparedAtoms (entities, rootID)
 {
     var atoms = null
     for (var i=0; i<entities.length; i++)
+    {
         if (entities[i].ID === rootID)
         {
             atoms = entities[i].Atoms;
             break;
         }
+    }
     
     if (atoms==null)
         return null;
@@ -37,9 +39,9 @@ function getPreparedAtoms (entities, rootID)
     var i=0
     while (i<atoms.length)
     {
-        if (atoms[i].Information.Case == "Deleted")
+        if (atoms[i].Information.Case === "Deleted")
         {
-            atoms = atoms.filter( atom => atom.AtomID!=atoms[i].AtomID )
+            atoms = atoms.filter( atom => atom.AtomID!==atoms[i].AtomID )
         }
         else i++;
     }
@@ -52,7 +54,7 @@ function getEntityName (atoms, rootID)
     for (var i=0; i<atoms.length; i++)
     {
         var data = atoms[i].Information;
-        if (data.Case == "Description")
+        if (data.Case === "Description")
         {
             return data.Fields[0].Name;
         }
@@ -67,7 +69,7 @@ function getMember (atom, members)
     if (data.Responsible != null)
     {
         member = data.Responsible.Fields[0];
-        var found = members.find (c => c.ID == member)
+        var found = members.find (c => c.ID === member)
         if (typeof found !== 'undefined')
         {
             member = found.Name;
@@ -84,7 +86,7 @@ function getUnorderedTransfers (entityID, entityName, atoms, members)
     var completedAtomIDs = []
     atoms.forEach(atom => { 
 
-        if (atom.Information.Case == "Transfer" && !completedAtomIDs.includes(atom.AtomID))
+        if (atom.Information.Case === "Transfer" && !completedAtomIDs.includes(atom.AtomID))
         {
             completedAtomIDs.push(atom.ID);
             var data = atom.Information.Fields[0];
@@ -123,7 +125,7 @@ function getCreationAtom (atoms)
 {
     for (var i=0; i<atoms.length; i++)
     {
-        if (atoms[i].Information.Case == "Creation")
+        if (atoms[i].Information.Case === "Creation")
         {
             return atoms[i]
         }
@@ -177,7 +179,7 @@ function generateHierarchy (direction, entities, members, rootID) {
         var creationHierarchyItem = getCreationHierarchyItem (rootID, entityName, creationAtom, members)
 
         var followupEntities;
-        if (direction=="upchain")
+        if (direction==="upchain")
         {
             // Sort by timestamp: Oldest first.
             hierarchyChain.sort (function(a, b){return a.timestamp - b.timestamp});
@@ -232,7 +234,7 @@ function placeTreeSVG (direction, entities, members, rootID, containerRef)
         .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
     // adds the links between the nodes
-    var link = g.selectAll(".link")
+    g.selectAll(".link")
         .data( nodes.descendants().slice(1))
         .enter().append("path")
         .attr("class", "link")

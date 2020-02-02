@@ -22,19 +22,6 @@ export function Membership()
         setResult({Case:"loading"});
         switch (operation)
         {
-            case "create":
-                axios.post('/api/members/', {
-                        ID: '',
-                        Name: name,
-                        API: url,
-                        Password: password
-                    }
-                    ).then (response =>  {
-                        setResult(response.data);
-                    }).catch (err => {
-                        setResult({Case:"Error", Fields:["An error occured."]})
-                    });
-                break;
             case "edit":
                 axios.post('/api/members/', {
                         ID: member,
@@ -60,12 +47,25 @@ export function Membership()
                         setResult({Case:"Error", Fields:["An error occured."]})
                     });
                 break;
+            default: //"create"
+                axios.post('/api/members/', {
+                        ID: '',
+                        Name: name,
+                        API: url,
+                        Password: password
+                    }
+                    ).then (response =>  {
+                        setResult(response.data);
+                    }).catch (err => {
+                        setResult({Case:"Error", Fields:["An error occured."]})
+                    });
+                break;
         }
     }
 
     return (       
         <div>
-            <img className="img-fluid" src="/img/membership_cover.jpg"></img>
+            <img className="img-fluid" src="/img/membership_cover.jpg" alt=""></img>
             <h1 className="mt-5 mb-5">Membership</h1>
 
             
@@ -73,7 +73,7 @@ export function Membership()
             <div className="row">
                 <div className="col-sm">
 
-                    <div className="text-center m-5"><img className="img-fluid w-25 h-25" src="/img/membership_edit.svg"></img></div>
+                    <div className="text-center m-5"><img className="img-fluid w-25 h-25" src="/img/membership_edit.svg" alt=""></img></div>
                     <h3>Manage</h3>
 
                     <div class="btn-group btn-group-toggle mt-3 mb-3" data-toggle="buttons">
@@ -135,7 +135,7 @@ export function Membership()
 
                 <div className="col-sm">
 
-                    <div className="text-center m-5"><img className="img-fluid w-25 h-25" src="/img/membership_about.svg"></img></div>
+                    <div className="text-center m-5"><img className="img-fluid w-25 h-25" src="/img/membership_about.svg" alt=""></img></div>
                     <h3>About</h3>
                     <p>
                     In order to link the decentralized instances, FoodFile needs a common lookup table called a membership service.

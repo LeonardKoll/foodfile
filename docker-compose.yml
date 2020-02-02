@@ -23,7 +23,7 @@ services:
     foodfile:
         build: ./
         command:
-            - --mode=combined 
+            - --mode=member
         ports:
             - 80:80
             - 443:443

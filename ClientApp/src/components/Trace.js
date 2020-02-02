@@ -20,7 +20,7 @@ export function Trace()
       });
 
     useEffect(() => {
-        if (searchterm.length == 10 || searchterm.length== 17)
+        if (searchterm.length === 10 || searchterm.length=== 17)
         {
             setRequeststate("loading");
             axios.get('/api/entities/global/' + direction + "/" + searchterm)
@@ -35,7 +35,7 @@ export function Trace()
 
     return (       
         <div>
-            <img className="img-fluid" src="/img/trace_cover.jpg"></img>
+            <img className="img-fluid" src="/img/trace_cover.jpg" alt=""></img>
             <h1 className="mt-5 mb-5">Trace</h1>
             <p>
                 FoodFile starts your retrival automatically as soon as you enter a valid trace code and opt for a search type.

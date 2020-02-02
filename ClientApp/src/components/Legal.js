@@ -4,7 +4,7 @@ export function Legal()
 {
     return (       
         <div>
-            <img className="img-fluid" src="/img/legal_cover.jpg"></img>
+            <img className="img-fluid" src="/img/legal_cover.jpg" alt=""></img>
             
             <h1 className="mt-5 mb-5">Responsible</h1>
             <p>Leonard Koll

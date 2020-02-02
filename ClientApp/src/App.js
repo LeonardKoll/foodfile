@@ -34,15 +34,15 @@ function App() {
         <Route exact path='/' component={Home} />
         <Route path='/developers' component={Developers} />
         {
-          ((mode=="member") || (mode=="combined")) &&
+          ((mode==="member") || (mode==="combined")) &&
           <Route path='/membership' component={Membership} />
         }
         {
-          ((mode=="regular") || (mode=="combined"))  &&
+          ((mode==="regular") || (mode==="combined"))  &&
           <Route path='/trace' component={Trace} />
         }
         {
-          ((mode=="regular") || (mode=="combined")) &&
+          ((mode==="regular") || (mode==="combined")) &&
           <Route path='/capture' component={Capture} />
         }
         <Route path='/legal' component={Legal} />

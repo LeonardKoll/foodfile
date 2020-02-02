@@ -30,6 +30,11 @@ module Startup =
             services.AddScoped<IElasticService, ElasticService>() |> ignore
             services.AddScoped<IEntityService, EntityService>() |> ignore
 
+            this.Configuration.GetValue<string>("this")
+            |> (MemberService(this.Configuration):>IMemberService).GetMemberRemote 
+            |> fun result -> services.AddSingleton<ThisInstance>(new ThisInstance(result))
+            |> ignore
+
             services.AddControllers() |> ignore
 
             services.AddSpaStaticFiles (fun configuration -> 

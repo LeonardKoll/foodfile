@@ -4,14 +4,14 @@ export function Developers()
 {
   return (
     <div>
-      <img className="img-fluid" src="/img/developers_cover.jpg"></img>
+      <img className="img-fluid" src="/img/developers_cover.jpg" alt=""></img>
       <h1 className="mt-5 mb-5">Developers</h1>
 
       <div className="container">
         <div className="row">
           <div className="col-sm">
             <div className="text-center m-5">
-              <a href="https://github.com/leonardkoll/foodfile"><img className="img-fluid w-25 h-25" src="/img/developers_git.png"></img></a>
+              <a href="https://github.com/leonardkoll/foodfile"><img className="img-fluid w-25 h-25" src="/img/developers_git.png" alt=""></img></a>
             </div>
             <h3>GitHub</h3>
             <p>
@@ -20,7 +20,7 @@ export function Developers()
           </div>
           <div className="col-sm">
             <div className="text-center m-5">
-              <a href="https://hub.docker.com/r/leonardkoll/foodfile"><img className="img-fluid w-25 h-25" src="/img/developers_docker.png"></img></a>
+              <a href="https://hub.docker.com/r/leonardkoll/foodfile"><img className="img-fluid w-25 h-25" src="/img/developers_docker.png" alt=""></img></a>
             </div>
             <h3>Docker</h3>
             <p>

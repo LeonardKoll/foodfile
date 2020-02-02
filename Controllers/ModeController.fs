@@ -12,12 +12,12 @@ type ModeReturn = {
 
 [<ApiController>]
 [<Route("api/[controller]")>]
-type ModeController (config:IConfiguration, ms:IMemberService) =
+type ModeController (config:IConfiguration, ti:ThisInstance) =
     inherit ControllerBase()
 
     [<HttpGet()>] // Jetzt wo hier string als return steht müssen wir ContentType JSon evtl manuell setzen.
     member __.Get() : string =
-        match ms.ThisInstance with
+        match ti.data with
             | None -> {Mode=config.GetValue<string>("mode"); MemberID=""; MemberName=""}
             | Some m -> {Mode=config.GetValue<string>("mode"); MemberID=m.ID; MemberName=m.Name}
         |> JsonConvert.SerializeObject

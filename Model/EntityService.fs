@@ -41,7 +41,7 @@ type CompletedRetreival = {
             | (true, result) -> result          // CR existed already, information merged :)
             | (false, result) -> this::result   // CR did not exist in list. Add now.
 
-type EntityService (ms:IMemberService,els:IElasticService) = 
+type EntityService (ms:IMemberService,els:IElasticService,ti:ThisInstance) = 
 
     static member ExtractInEntities = fun (entities:Entity list) ->
         entities
@@ -62,14 +62,14 @@ type EntityService (ms:IMemberService,els:IElasticService) =
                 >> String.concat "&"
                 >> (fun arguments -> memberAPI + direction.ToString() + "/Multiple?" + arguments)) entityIDs
 
-            let! result = Http.AsyncRequestString url 
-            //ToDo: Error Handling. Log errors somewhere end return empty list.
-            // Wenn eine url nicht stimmt crasht hier aktuell alles
-
-            return 
-                (JArray.Parse // Errors may also occur here.
-                >> (fun parsed -> parsed.ToObject<Entity list>())
-                >> List.filter( fun entity -> entity.Verify )) result
+            try
+                let! result = Http.AsyncRequestString url 
+                return 
+                    (JArray.Parse // Errors may also occur here.
+                    >> (fun parsed -> parsed.ToObject<Entity list>())
+                    >> List.filter( fun entity -> entity.Verify )) result
+            with
+            _ -> return []
         }
 
     static member private MergeCRs = fun (toMerge:CompletedRetreival list) (basis:CompletedRetreival list) ->
@@ -214,7 +214,7 @@ type EntityService (ms:IMemberService,els:IElasticService) =
         
 
         member this.CompleteSearch = fun (direction:Direction) (memberID:string option) (entityIDs:string list) ->
-            match (memberID, ms.ThisInstance) with
+            match (memberID, ti.data) with
             | (None, None) -> []
             | (None, Some ti ) ->
                 this.ExecuteCompleteSearch [] [

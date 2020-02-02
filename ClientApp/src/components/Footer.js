@@ -17,7 +17,7 @@ export function Footer({mode, memberID, memberName})
                     </div>
                     <div className="col-sm">
                         {
-                            (((mode=="regular") || (mode=="combined")) && (mode.MemberID != "")) &&
+                            (((mode==="regular") || (mode==="combined")) && (memberID !== "")) &&
                             <p className="float-right">Member {memberID}<br></br>{memberName}</p>
                         }
                     </div>

@@ -2,7 +2,7 @@
   "profiles": {
     "Logic": {
       "commandName": "Project",
-      "commandLineArgs": "--elastic http://localhost:9200/ --members https://localhost:5001/api/members/ --mode combined --this IK7TEO --delay 0",
+      "commandLineArgs": "--elastic http://localhost:9200/ --mode combined --this IK7TEO --delay 0",
       "launchBrowser": true,
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"

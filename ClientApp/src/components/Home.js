@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
+import React from 'react';
 
 export function Home ()
 {
   return (
     <div>
-      <img className="img-fluid" src="/img/home_cover.jpg"></img>
+      <img className="img-fluid" src="/img/home_cover.jpg" alt=""></img>
       <div className="text-center mt-5">
         <h1 ><i>Taste</i></h1>
         <h2><i>is a matter of <b>trust</b>.</i></h2>
@@ -13,7 +13,7 @@ export function Home ()
       <div className="container">
         <div className="row">
           <div className="col-sm p-5">
-            <div className="text-center m-5"><img className="img-fluid w-50 h-50" src="/img/home_about.svg"></img></div>
+            <div className="text-center m-5"><img className="img-fluid w-50 h-50" src="/img/home_about.svg" alt=""></img></div>
             <h3>About</h3>
             <p>
             FoodFile creates insights, trust and transparency
@@ -28,7 +28,7 @@ export function Home ()
             </p>
           </div>
           <div className="col-sm p-5">
-          <div className="text-center m-5"><img className="img-fluid w-50 h-50" src="/img/home_motivation.svg"></img></div>
+          <div className="text-center m-5"><img className="img-fluid w-50 h-50" src="/img/home_motivation.svg" alt=""></img></div>
             <h3>Motivation</h3>
             <p>
             Globalization and outsourcing have fundamentally changed the pace
@@ -42,7 +42,7 @@ export function Home ()
             </p>
           </div>
           <div className="col-sm p-5">
-            <div className="text-center m-5"><img className="img-fluid w-50 h-50" src="/img/home_technology.svg"></img></div>
+            <div className="text-center m-5"><img className="img-fluid w-50 h-50" src="/img/home_technology.svg" alt=""></img></div>
             <h3>Technology</h3>
             <p>
             FoodFile is open-source and developed with modern, reliability proven 
