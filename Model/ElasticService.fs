@@ -31,10 +31,16 @@ type ElasticService(config:IConfiguration) =
 
     static member InitIndices = fun (host:string) (creationCmd:string) ->
         try
-            Http.RequestString ( host + EntityIndex, httpMethod = "PUT", body = TextRequest creationCmd) |> ignore
+            Http.RequestString (    host + EntityIndex, 
+                                    httpMethod = "PUT", 
+                                    headers = [ "Content-Type","application/json" ],
+                                    body = TextRequest creationCmd) |> ignore
         with _ -> ()
         try
-            Http.RequestString ( host + MemberIndex, httpMethod = "PUT", body = TextRequest creationCmd) |> ignore
+            Http.RequestString (    host + MemberIndex, 
+                                    httpMethod = "PUT", 
+                                    headers = [ "Content-Type","application/json" ],
+                                    body = TextRequest creationCmd) |> ignore
         with _ -> ()
 
     member private this.GetDocuments = fun (query:string) (index:string) (ids:string list) ->

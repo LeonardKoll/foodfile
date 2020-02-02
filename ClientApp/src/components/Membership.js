@@ -138,13 +138,13 @@ export function Membership()
                     <div className="text-center m-5"><img className="img-fluid w-25 h-25" src="/img/membership_about.svg" alt=""></img></div>
                     <h3>About</h3>
                     <p>
-                    In order to link the decentralized instances, FoodFile needs a common lookup table called a membership service.
+                    In order to link the decentralized instances, FoodFile needs a common lookup table called membership service.
                     Request and manage your member-ID here in order to connect your FoodFile instance to the global network.
                     Your member-ID, company name and API-URL will be publicly available.
                     A membership service does not store your food records.
                     </p>
                     <p>
-                    In upcoming versions, you will be able to sign any data captured by you or other members.
+                    In upcoming versions, you will be able to sign data captured by you or other members.
                     The membership service will then serve as a trusted repository for your signature key.
                     </p>
                 </div>

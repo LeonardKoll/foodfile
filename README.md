@@ -1,5 +1,5 @@
 # FoodFile
-FoodFile is going to be decantralized food traceability solution. To find out more about the project visit [foodfile.org](https://foodfile.org).
+FoodFile is going to be decentralized food traceability solution. To find out more about the project visit [foodfile.org](https://foodfile.org).
 
 ## Command-Line options
 All command line arguments are optional. The defaults (appSettings.json) are chosen to work with the [elasticsearch docker image](https://hub.docker.com/_/elasticsearch). It is recommended to provide your member-ID (--this).
