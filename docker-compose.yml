@@ -22,13 +22,21 @@ services:
 
     foodfile:
         build: ./
+#       image: leonardkoll/foodfile:latest
         command:
-            - --mode=member
+            - --mode=regular
         ports:
             - 80:80
             - 443:443
         depends_on: 
             - elasticsearch
+#       environment:
+#           - ASPNETCORE_URLS=https://+;http://+
+#           - ASPNETCORE_HTTPS_PORT=443
+#           - ASPNETCORE_Kestrel__Certificates__Default__Password=
+#           - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/foodfile.pfx
+#       volumes:
+#           - ./https:/https/
 
 volumes:
     esdata:

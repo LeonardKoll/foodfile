@@ -22,22 +22,21 @@ type IElasticService =
 type ElasticService(config:IConfiguration) =
 
     let Host = config.GetValue<string>("elastic")
+    let EntityIndex = config.GetValue<string>("entityindex")
+    let MemberIndex = config.GetValue<string>("memberindex") // ToDo: Time sliced indexing.
 
-    // ToDo: Time sliced indexing.
-    static let EntityIndex = "entities"
-    static let MemberIndex = "members"
     static let ByIDsQuery = "{\"from\":0,\"size\":10000,\"query\": {\"ids\" : {\"values\" : #IDs }}}"
     static let ByInEntitiesQuery = "{\"from\":0,\"size\":10000,\"query\": {\"bool\": {\"filter\": {\"terms\": {\"InEntities\": #IDs }}}}}"
 
-    static member InitIndices = fun (host:string) (creationCmd:string) ->
+    static member InitIndices = fun (host:string) (entityIndex:String) (memberIndex:String) (creationCmd:string) ->
         try
-            Http.RequestString (    host + EntityIndex, 
+            Http.RequestString (    host + entityIndex, 
                                     httpMethod = "PUT", 
                                     headers = [ "Content-Type","application/json" ],
                                     body = TextRequest creationCmd) |> ignore
         with _ -> ()
         try
-            Http.RequestString (    host + MemberIndex, 
+            Http.RequestString (    host + memberIndex, 
                                     httpMethod = "PUT", 
                                     headers = [ "Content-Type","application/json" ],
                                     body = TextRequest creationCmd) |> ignore

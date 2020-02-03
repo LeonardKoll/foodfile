@@ -24,8 +24,11 @@ module Startup =
         // This method gets called by the runtime. Use this method to add services to the container.
         member this.ConfigureServices(services: IServiceCollection) =
 
-            
-            ElasticService.InitIndices (this.Configuration.GetValue<string>("elastic")) (this.Configuration.GetValue<string>("esindexcreationcmd"))
+            let host = this.Configuration.GetValue<string>("elastic")
+            let entityindex = this.Configuration.GetValue<string>("entityindex")
+            let memberindex = this.Configuration.GetValue<string>("memberindex")
+            let creationcmd = this.Configuration.GetValue<string>("indexcreationcmd")
+            ElasticService.InitIndices host entityindex memberindex creationcmd
 
             services.AddScoped<IMemberService, MemberService>() |> ignore
             services.AddScoped<IElasticService, ElasticService>() |> ignore
@@ -81,8 +84,8 @@ module Startup =
                 .AddCommandLine(args)
                 .Build()
 
-        // Interactions with Elasticsearch will fail right after startup of the ES container.
-        //Thread.Sleep (1000 * config.GetValue<int>("delay"))
+        //Interactions with Elasticsearch will fail right after startup of the ES container.
+        Thread.Sleep (1000 * config.GetValue<int>("delay"))
 
         Host.CreateDefaultBuilder(args)
             .ConfigureWebHostDefaults(fun webBuilder ->
