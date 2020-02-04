@@ -51,7 +51,7 @@ type LocalController (els:IElasticService, ens:IEntityService, config:IConfigura
                             // Creation exsists.
                             | [_] ->    if List.exists (fun (atom:Atom) -> (atom.AtomID<>"" || atom.Version>0)) inputAtoms
                                         then ( Error("When a new Entity is created, all related atoms must have an empty atom-ID and a Version <= 0.") )
-                                        else ( Result(Types.newEntityID) )
+                                        else ( Result(Types.newEntityID()) )
                             | _ ->      Error ("There can only be one entity creation per request as all atoms must belong to the same entity.")
                     | entityID ->   if List.exists (fun (atom:Atom) -> (atom.AtomID="" || atom.Version>0)) inputAtoms
                                     then Error("All atoms belong to the same entity but there are atoms with a specific version but no atom ID.")
@@ -68,7 +68,7 @@ type LocalController (els:IElasticService, ens:IEntityService, config:IConfigura
                     |> List.map (fun atom -> 
                         let timestamp = Convert.ToInt32 ((DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1))).TotalSeconds)
                         match (atom.AtomID, atom.Version>0) with
-                        | ("", false) -> {atom with EntityID=entityID; AtomID=newAtomID; Version=timestamp}
+                        | ("", false) -> {atom with EntityID=entityID; AtomID=newAtomID(); Version=timestamp}
                         | (_, false) -> {atom with EntityID=entityID; Version=timestamp}
                         | _ -> {atom with EntityID=entityID})
                     |> fun atoms -> Result {ID=entityID; Atoms=atoms}

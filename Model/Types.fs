@@ -219,6 +219,6 @@ module Types =
         let sz = Array.length chars in
         String(Array.init length (fun _ -> chars.[r.Next sz]))
 
-    let newEntityID = newID EntityIDLength
-    let newAtomID = newID AtomIDLength
-    let newMemberID = newID MemberIDLength
+    let newEntityID () = newID EntityIDLength
+    let newAtomID () = newID AtomIDLength
+    let newMemberID () = newID MemberIDLength

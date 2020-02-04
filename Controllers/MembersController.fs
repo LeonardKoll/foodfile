@@ -39,9 +39,9 @@ type MembersController (es:IElasticService, config:IConfiguration) =
         memb.ID
         |> function
             | "" -> 
-                let memberID = newMemberID
+                let memberID = newMemberID()
                 {memb with ID=memberID} |> es.WriteMember |> ignore
-                Result ("Created new member with ID " + memberID.ToString())
+                Result ("Created new member with member-ID: " + memberID.ToString())
             | id -> 
                 es.GetMemberLocal id
                 |> function
