@@ -53,7 +53,7 @@ type LocalController (els:IElasticService, ens:IEntityService, config:IConfigura
                                         then ( Error("When a new Entity is created, all related atoms must have an empty atom-ID and a Version <= 0.") )
                                         else ( Result(Types.newEntityID()) )
                             | _ ->      Error ("There can only be one entity creation per request as all atoms must belong to the same entity.")
-                    | entityID ->   if List.exists (fun (atom:Atom) -> (atom.AtomID="" || atom.Version>0)) inputAtoms
+                    | entityID ->   if List.exists (fun (atom:Atom) -> (atom.AtomID="" && atom.Version>0)) inputAtoms
                                     then Error("All atoms belong to the same entity but there are atoms with a specific version but no atom ID.")
                                     else Result entityID
                 | _ ->              Error ("All atoms must belong to the same entity.")

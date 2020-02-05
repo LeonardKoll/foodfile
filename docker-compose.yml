@@ -23,8 +23,7 @@ services:
     foodfile:
         build: ./
 #       image: leonardkoll/foodfile:latest
-        command:
-            - --mode=regular
+        command: --mode=regular
         ports:
             - 80:80
             - 443:443

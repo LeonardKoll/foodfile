@@ -35,13 +35,11 @@ Note:
 
 If you want to start FoodFile in regular mode with docker-compose, make sure to provide your member-ID:
 ```
-command:
-    - --this=<member-ID>
+command: --this=<member-ID>
 ```
 If you want to start FoodFile in member mode with docker-compose, set mode to member:
 ```
-command:
-    - --mode=member
+command: --mode=member
 ```
 
 ## Run with Docker
