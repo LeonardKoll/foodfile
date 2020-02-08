@@ -5,7 +5,6 @@ open Newtonsoft.Json
 open Microsoft.Extensions.Configuration
 open System
 
-
 type GcReturn = {
     Entities:Entity list;
     Members:Member list;
@@ -22,8 +21,8 @@ type GlobalController (ms:IMemberService,els:IElasticService, ens:IEntityService
 
         let entities =
             (function
-            | [|entityID|] -> ens.CompleteSearch Downchain None [entityID]
-            | [|memberID; entityID|] -> ens.CompleteSearch Downchain (Some memberID) [entityID]
+            | [|entityID|] -> ens.CompleteSearch Down None [entityID]
+            | [|memberID; entityID|] -> ens.CompleteSearch Down (Some memberID) [entityID]
             | _ -> []) (id.Split('-'))
         
         let members = ms.ExtractMembers entities
@@ -37,8 +36,8 @@ type GlobalController (ms:IMemberService,els:IElasticService, ens:IEntityService
 
         let entities =
             (function
-            | [|entityID|] -> ens.CompleteSearch Upchain None [entityID]
-            | [|memberID; entityID|] -> ens.CompleteSearch Upchain (Some memberID) [entityID]
+            | [|entityID|] -> ens.CompleteSearch Up None [entityID]
+            | [|memberID; entityID|] -> ens.CompleteSearch Up (Some memberID) [entityID]
             | _ -> []) (id.Split('-'))
 
         let members = ms.ExtractMembers entities

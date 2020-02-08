@@ -12,7 +12,6 @@ open Microsoft.Extensions.Configuration
 type IMemberService =
     abstract member GetMembersRemote : (string list -> Member list)
     abstract member GetMemberRemote : (string -> Member option)
-    abstract member GetMemberAPIs : (string list -> (string*string) list)
     abstract member ExtractMembers : (Entity list -> Member list)
 
 type MemberService(config:IConfiguration) =
@@ -48,12 +47,6 @@ type MemberService(config:IConfiguration) =
             [memberID]
             |> (this:>IMemberService).GetMembersRemote
             |> List.tryExactlyOne
-
-        member this.GetMemberAPIs = fun (memberIDs:string list) ->
-            memberIDs
-            |> (this:>IMemberService).GetMembersRemote
-            |> List.map ( fun p -> p.API )
-            |> List.zip memberIDs
 
         member this.ExtractMembers = 
             MemberService.ExtractMemberIDs >> (this:>IMemberService).GetMembersRemote
