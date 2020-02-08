@@ -16,7 +16,9 @@ export function Legal()
             hi@evorne.com</p>
 
             <h1 className="mt-5 mb-3">References</h1>
-            <p>Icons made by <a href="https://www.flaticon.com/authors/wanicon" title="wanicon">wanicon</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a>
+            <p>Pictures from <a href="https://unsplash.com/">Unsplash</a>
+            <br></br>
+            Icons made by <a href="https://www.flaticon.com/authors/wanicon" title="wanicon">wanicon</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a>
             <br></br>
             Privcy Policy created with <a href="https://termly.io">termly.io</a>
             <br></br>
