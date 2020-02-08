@@ -11,7 +11,7 @@ type MemberActivity = {
 type IEntityService =
     abstract member LocalDownchainSearch : (string list -> Entity list)
     abstract member LocalUpchainSearch : (string list -> Entity list)
-    abstract member CompleteSearch : (SearchDirection -> string option -> string list -> Entity list)
+    abstract member CompleteSearch : (ChainDirection -> string option -> string list -> Entity list)
 
 type EntityService (ms:IMemberService,els:IElasticService,ti:ThisInstance) = 
 
@@ -21,7 +21,7 @@ type EntityService (ms:IMemberService,els:IElasticService,ti:ThisInstance) =
             entity.InEntities @ state
             |> List.distinct) []
 
-    static member private SearchEntitiesRemote = fun (direction:SearchDirection) (memberAPI:string) (entityIDs:string list) ->
+    static member private SearchEntitiesRemote = fun (direction:ChainDirection) (memberAPI:string) (entityIDs:string list) ->
         async {
 
             if entityIDs.IsEmpty
@@ -31,7 +31,7 @@ type EntityService (ms:IMemberService,els:IElasticService,ti:ThisInstance) =
             let url = 
                 (List.map ( fun id -> "id=" + id )
                 >> String.concat "&"
-                >> (fun arguments -> memberAPI + direction.ToUrlString() + "/Multiple?" + arguments)) entityIDs
+                >> (fun arguments -> memberAPI + direction.ToString() + "/Multiple?" + arguments)) entityIDs
 
             try
                 let! result = Http.AsyncRequestString url 
@@ -52,7 +52,7 @@ type EntityService (ms:IMemberService,els:IElasticService,ti:ThisInstance) =
                 |> fun todo -> todo::state
             ) []
 
-    static member private ExecuteQueryTasks = fun (direction:SearchDirection) (tasks:MemberActivity list) ->
+    static member private ExecuteQueryTasks = fun (direction:ChainDirection) (tasks:MemberActivity list) ->
         tasks
         |> List.map ( fun (task) ->
             async {
@@ -94,12 +94,12 @@ type EntityService (ms:IMemberService,els:IElasticService,ti:ThisInstance) =
             | None -> {ma with Entities=ids}
             )
 
-    static member private MergeIDs = fun (direction:SearchDirection) (entities:Entity list) (entityIDs: string list) ->
+    static member private MergeIDs = fun (direction:ChainDirection) (entities:Entity list) (entityIDs: string list) ->
         match direction with
-        | Up ->
+        | Upchain ->
             entities
             |> List.map (fun entity -> entity.ID)
-        | Down ->
+        | Downchain ->
             entities
             |> List.collect (fun entity -> entity.InEntities)
         |> fun result -> entityIDs @ result
@@ -147,7 +147,7 @@ type EntityService (ms:IMemberService,els:IElasticService,ti:ThisInstance) =
                 |> List.filter (fun id -> not(List.exists (fun elem -> id=elem) doneAfterIDs))
                 |> this.ExecuteLocalUpchainSearch doneAfterIDs (result @ entities) 
             
-    member this.ExecuteCompleteSearch = fun (lastResult:Entity list) (direction:SearchDirection) (lastHistory:MemberActivity list) (ids:string list) -> 
+    member this.ExecuteCompleteSearch = fun (lastResult:Entity list) (direction:ChainDirection) (lastHistory:MemberActivity list) (ids:string list) -> 
         
         let iterationResult =
             (EntityService.ComputeQueryTasks lastHistory 
@@ -183,7 +183,7 @@ type EntityService (ms:IMemberService,els:IElasticService,ti:ThisInstance) =
             |> fun initials -> this.ExecuteLocalUpchainSearch [] initials entityIDs
         
 
-        member this.CompleteSearch = fun (direction:SearchDirection) (memberID:string option) (entityIDs:string list) ->
+        member this.CompleteSearch = fun (direction:ChainDirection) (memberID:string option) (entityIDs:string list) ->
             match memberID with
             | None -> None
             | Some id -> ms.GetMemberRemote id

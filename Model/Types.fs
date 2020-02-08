@@ -49,19 +49,11 @@ type EntityDestruction = {
     Responsible: string option
 }
 
-type SearchDirection = Down | Up
-with
-
-    member this.ToUrlString = fun () ->
-        match this with
-        | Up -> "upchain"
-        | Down -> "downchain"
-
-type ChainDirection =  Downchain | Upchain | Bidirectional | Unspecified
+type ChainDirection =  Downchain | Upchain 
 
 type EntityInvolvement = {
     Member: string;
-    Direction: ChainDirection;
+    Direction: ChainDirection option;
 }
 
 type AtomInformation = 
