@@ -21,7 +21,7 @@ services:
             - discovery.type=single-node
 
     foodfile:
-        build: ./
+        build: ./FoodFile
 #       image: leonardkoll/foodfile:latest
         command: --mode=regular
         ports:
