@@ -34,8 +34,13 @@ module Startup =
             services.AddScoped<IElasticService, ElasticService>() |> ignore
             services.AddScoped<IEntityService, EntityService>() |> ignore
 
-            this.Configuration.GetValue<string>("this")
-            |> (MemberService(this.Configuration):>IMemberService).GetMemberRemote 
+            match this.Configuration.GetValue<string>("mode") with
+            | "combined" -> 
+                this.Configuration.GetValue<string>("this")
+                |> (ElasticService(this.Configuration):>IElasticService).GetMemberLocal
+            | _ -> 
+                this.Configuration.GetValue<string>("this")
+                |> (MemberService(this.Configuration):>IMemberService).GetMemberRemote 
             |> fun result -> services.AddSingleton<ThisInstance>(new ThisInstance(result))
             |> ignore
 

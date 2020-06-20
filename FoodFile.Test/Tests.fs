@@ -19,9 +19,15 @@ type TestClass () =
         let creationcmd = config.GetValue<string>("indexcreationcmd")
         ElasticService.InitIndices host entityindex memberindex creationcmd
         
-        new ElasticService(config) :> IElasticService
+        let es = new ElasticService(config) :> IElasticService
+
+        es
+        |> fun service -> List.iter (fun memb ->
+                service.WriteMember memb) FoodFile.TestMembers.all
+
+        es
         |> fun service -> List.iter (fun entity ->
-                service.WriteEntity entity) FoodFile.TestData.all
+                service.WriteEntity entity) FoodFile.TestEntities.all
 
     [<TestMethod>]
     member this.TestMethodPassing () =

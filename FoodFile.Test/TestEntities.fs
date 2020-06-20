@@ -1,10 +1,8 @@
 ﻿namespace FoodFile
 
-module TestData =
+open TestMembers
 
-    let freshfruitfarmers = Some("IK7TEO")
-    let sugarsilo = Some("UC2NRQ")
-    let yummyjam = Some("8X55N4")
+module TestEntities =
 
     let erdbeeren:Entity = {
         ID = "8EALKMS2Q7";
@@ -20,12 +18,12 @@ module TestData =
             Information = Creation ({   InEntities = []; 
                                         Location = Some({Name=Some("Farm 3"); Coordinates="50.553291, 11.019047"}); 
                                         Timestamp = 1562167380L; 
-                                        Responsible=freshfruitfarmers});
+                                        Responsible=Some(freshfruitfarmers.ID)});
             Signatures=[]}
 
             // Collecting
             {AtomID = "NZEU"; EntityID="8EALKMS2Q7"; Version=1;
-            Information = Transfer ({  Responsible=freshfruitfarmers;
+            Information = Transfer ({  Responsible=Some(freshfruitfarmers.ID);
                                 TrackPoints=
                                     [({Name=Some("FreshFruitFarmers Warehouse"); Coordinates="50.281290, 10.967620"}, 1562227920L)
                                 ]});
@@ -33,7 +31,7 @@ module TestData =
 
             // Shipping
             {AtomID = "TTI5"; EntityID="8EALKMS2Q7"; Version=1;
-            Information = Transfer ({  Responsible=freshfruitfarmers;
+            Information = Transfer ({  Responsible=Some(freshfruitfarmers.ID);
                                 TrackPoints=
                                     [({Name=Some("YummyJam Facilty"); Coordinates="51.590067, 8.1050100"}, 1562231520L)
                                 ]});
@@ -55,7 +53,7 @@ module TestData =
             Information = Creation ({   InEntities = []; 
                                         Location = Some({Name=Some("Field A4"); Coordinates="52.029034, 17.553938"}); 
                                         Timestamp = 1553698467L;
-                                        Responsible=sugarsilo});
+                                        Responsible=Some(sugarsilo.ID)});
             Signatures= []}
 
         ]
@@ -89,13 +87,13 @@ module TestData =
             {AtomID = "BCWG"; EntityID="EIDDTPPDB2"; Version=1;
             Information = Creation ({   InEntities = [zuckerrueben.ID; geliermittel.ID]; 
                                         Location = None
-                                        Responsible = sugarsilo;
+                                        Responsible = Some(sugarsilo.ID);
                                         Timestamp = 1555303285L});
             Signatures= []}
 
             // Shipping
             {AtomID = "NCDQ"; EntityID="EIDDTPPDB2"; Version=1;
-            Information = Transfer ({  Responsible=sugarsilo;
+            Information = Transfer ({  Responsible=Some(sugarsilo.ID);
                                 TrackPoints=
                                     [({Name=Some("YummyJam Facilty"); Coordinates="51.590067, 8.1050100"}, 1555598311L)
                                 ]});
@@ -116,7 +114,7 @@ module TestData =
             {AtomID = "ZSOC"; EntityID="6FGEMO4WX8"; Version=1; 
             Information = Creation ({   InEntities = [erdbeeren.ID; gelierzucker.ID]; 
                                         Location = Some({Name=Some("YummyJam Facilty"); Coordinates="51.590067, 8.1050100"})
-                                        Responsible=yummyjam
+                                        Responsible=Some(yummyjam.ID)
                                         Timestamp = 1568979091L});
             Signatures= []}
             
@@ -136,7 +134,7 @@ module TestData =
             {AtomID = "MFEA"; EntityID="PMK9BG1YL5"; Version=1; 
             Information = Creation ({   InEntities = [erdbeeren.ID; gelierzucker.ID]; 
                                         Location = Some({Name=Some("YummyJam Facilty"); Coordinates="51.590067, 8.1050100"})
-                                        Responsible=yummyjam
+                                        Responsible=Some(yummyjam.ID)
                                         Timestamp = 1568979091L});
             Signatures= []}
             
@@ -156,7 +154,7 @@ module TestData =
             {AtomID = "OO4Q"; EntityID="JVE8F98148"; Version=1; 
             Information = Creation ({   InEntities = [erdbeeren.ID; gelierzucker.ID]; 
                                         Location = Some({Name=Some("YummyJam Facilty"); Coordinates="51.590067, 8.1050100"})
-                                        Responsible=yummyjam
+                                        Responsible=Some(yummyjam.ID)
                                         Timestamp = 1568979091L});
             Signatures= []}
             
@@ -176,7 +174,7 @@ module TestData =
             {AtomID = "XF78"; EntityID="LL9ZOFC5EH"; Version=1; 
             Information = Creation ({   InEntities = [erdbeeren.ID; gelierzucker.ID]; 
                                         Location = Some({Name=Some("YummyJam Facilty"); Coordinates="51.590067, 8.1050100"})
-                                        Responsible=yummyjam
+                                        Responsible=Some(yummyjam.ID)
                                         Timestamp = 1568979091L});
             Signatures= []}
             
@@ -196,7 +194,7 @@ module TestData =
             {AtomID = "VS2Y"; EntityID="1I2VHCWKJL"; Version=1; 
             Information = Creation ({   InEntities = [erdbeeren.ID; gelierzucker.ID]; 
                                         Location = Some({Name=Some("YummyJam Facilty"); Coordinates="51.590067, 8.1050100"})
-                                        Responsible=yummyjam
+                                        Responsible=Some(yummyjam.ID)
                                         Timestamp = 1568979091L});
             Signatures= []}
             
