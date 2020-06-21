@@ -53,7 +53,6 @@ type ChainDirection =  Downchain | Upchain
 
 type EntityInvolvement = {
     Member: string;
-    Direction: ChainDirection option;
 }
 
 type AtomInformation = 
@@ -70,6 +69,12 @@ type Signature = {
     Timestamp: int64;
 }
 
+type SharingPolicy =
+    | Enabled
+    | Disabled
+    | ByToken
+    | ByTokenOrChain
+
 type Atom = {
     AtomID: string;             // 4 Zeichen
     EntityID: string;           // 10 Zeichen
@@ -77,6 +82,7 @@ type Atom = {
     Information: AtomInformation;
     // A signature covers everything above. A new signature does not change the Atom version; every other change does.
     Signatures: Signature list;
+    Sharing: SharingPolicy;
 }with
 
     member this.CompleteID =
@@ -125,6 +131,21 @@ type Entity = {
             | Deleted -> false
             | _ -> true
             )
+    
+    // Removes Atoms which do not have sharing enabled
+    member this.ApplySharingPolicy (policy:SharingPolicy)=
+        match policy with
+        | Enabled -> // We do not have a token
+            this.Atoms
+            |> List.filter (fun atom -> atom.Sharing=Enabled)
+        | ByTokenOrChain -> // We do have a token but it is for an other entity in a search.
+            this.Atoms
+            |> List.filter (fun atom -> atom.Sharing=Enabled || atom.Sharing=ByTokenOrChain)
+        | ByToken -> // We have a token matching this entitiy 
+            this.Atoms
+            |> List.filter (fun atom -> atom.Sharing=Enabled || atom.Sharing=ByTokenOrChain || atom.Sharing=ByToken)
+        | _ -> []
+        |> fun atoms -> {Atoms=atoms; ID=this.ID}
 
     // Import for Elasticsearch to allow for efficient upchain queries.
     member this.InEntities =

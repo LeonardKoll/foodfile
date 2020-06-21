@@ -6,14 +6,14 @@ module TestMembers =
     let freshfruitfarmers:Member = {
         ID = "HOG6XJ";
         Name = "FreshFruitFarmers LLC";
-        API = "https://localhost:5001/api/entities/local/";
+        API = "http://localhost:5002/api/entities/local/";
         Password = "admin";
     }
 
     let sugarsilo:Member = {
         ID = "8XX99T";
         Name = "SugarSilo SARL";
-        API = "https://localhost:5001/api/entities/local/";
+        API = "http://localhost:5003/api/entities/local/";
         Password = "admin";
     }
 

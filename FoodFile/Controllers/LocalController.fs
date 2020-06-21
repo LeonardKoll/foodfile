@@ -6,6 +6,7 @@ open Newtonsoft.Json.Linq
 open System
 open Types
 open Microsoft.Extensions.Configuration
+open System.Security.Cryptography
 
 [<ApiController>]
 [<Route("api/entities/[controller]")>]
@@ -13,17 +14,69 @@ open Microsoft.Extensions.Configuration
 type LocalController (els:IElasticService, ens:IEntityService, config:IConfiguration) =
     inherit ControllerBase()
 
+    (*
+        ID-Format:
+        <entity-ID>-<token(hex)>
+        with token only allowed at the withtoken methods
+    *)
+
     [<HttpGet("downchain/{id}")>] // Jetzt wo hier string als return steht müssen wir ContentType JSon evtl manuell setzen.
     member __.GetDownchain([<FromQuery>] id:string array) : string = //Multiple
         ens.LocalDownchainSearch (Array.toList id)
+        |> __.ApplySharingPolicy None
         |> JsonConvert.SerializeObject
         // ToDo: Error Handling.
 
     [<HttpGet("upchain/{id}")>] // Jetzt wo hier string als return steht müssen wir ContentType JSon evtl manuell setzen.
     member __.GetUpchain([<FromQuery>] id:string array) : string = //Multiple
         ens.LocalUpchainSearch (Array.toList id)
+        |> __.ApplySharingPolicy None
         |> JsonConvert.SerializeObject
         // ToDo: Error Handling.
+    
+    // With Token
+    [<HttpGet("downchain/withtoken/{id}")>] // Jetzt wo hier string als return steht müssen wir ContentType JSon evtl manuell setzen.
+    member __.GetDownchain(id:string) : string = //Multiple
+        let [|entityID; token|] = id.Split('-')
+        ens.LocalDownchainSearch ([entityID])
+        |> __.ApplySharingPolicy (Some (entityID,token))
+        |> JsonConvert.SerializeObject
+        // ToDo: Error Handling.
+
+    // With Token
+    [<HttpGet("upchain/withtoken/{id}")>] // Jetzt wo hier string als return steht müssen wir ContentType JSon evtl manuell setzen.
+    member __.GetUpchain(id:string) : string = //Multiple
+        let [|entityID; token|] = id.Split('-')
+        ens.LocalUpchainSearch ([entityID])
+        |> __.ApplySharingPolicy (Some (entityID,token))
+        |> JsonConvert.SerializeObject
+        // ToDo: Error Handling.
+
+    member private __.ApplySharingPolicy tokenInfo (entities:Entity list) : Entity list =
+        //Check, if the token is applicable for one of the entities
+        match tokenInfo with
+        | Some (tokenEntity:string,tokenValue:string) -> // Verify
+            tokenEntity + config.GetValue<string>("salt")
+            |> System.Text.Encoding.UTF8.GetBytes
+            |> (new SHA256Managed()).ComputeHash
+            |> Array.map (fun (x : byte) -> System.String.Format("{0:X2}", x))
+            |> String.concat System.String.Empty
+            |> fun result -> result = tokenValue.ToUpper()
+            |> function
+                | true ->
+                    entities
+                    |> List.map (fun c -> 
+                        if c.ID=tokenEntity 
+                        then c.ApplySharingPolicy ByToken 
+                        else c.ApplySharingPolicy ByTokenOrChain)
+                | false -> // Token not valid. Only public atoms will be shared.
+                    entities
+                    |> List.map (fun c -> c.ApplySharingPolicy Enabled)
+        | None -> // No Token provided. Only public atoms will be shared.
+            entities
+            |> List.map (fun c -> c.ApplySharingPolicy Enabled)
+        |> List.filter (fun c -> not c.Atoms.IsEmpty)
+        
 
     [<HttpPost>]
     member __.Create([<FromBody>] body:Object ) : string =

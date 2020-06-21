@@ -11,7 +11,7 @@ type MemberActivity = {
 type IEntityService =
     abstract member LocalDownchainSearch : (string list -> Entity list)
     abstract member LocalUpchainSearch : (string list -> Entity list)
-    abstract member CompleteSearch : (ChainDirection -> string option -> string list -> Entity list)
+    abstract member CompleteSearch : (ChainDirection -> string option -> string -> string option -> Entity list)
 
 type EntityService (ms:IMemberService,els:IElasticService,ti:ThisInstance) = 
 
@@ -21,28 +21,6 @@ type EntityService (ms:IMemberService,els:IElasticService,ti:ThisInstance) =
             entity.InEntities @ state
             |> List.distinct) []
 
-    static member private SearchEntitiesRemote = fun (direction:ChainDirection) (memberAPI:string) (entityIDs:string list) ->
-        async {
-
-            if entityIDs.IsEmpty
-            then return []
-            else
-            
-            let url = 
-                (List.map ( fun id -> "id=" + id )
-                >> String.concat "&"
-                >> (fun arguments -> memberAPI + direction.ToString() + "/Multiple?" + arguments)) entityIDs
-
-            try
-                let! result = Http.AsyncRequestString url 
-                return 
-                    (JArray.Parse // Errors may also occur here.
-                    >> (fun parsed -> parsed.ToObject<Entity list>())
-                    >> List.filter( fun entity -> entity.Verify )) result
-            with
-            _ -> return []
-        }
-
     static member private ComputeQueryTasks = fun (queryHistory:MemberActivity list) (ids:string list) ->
         queryHistory
         |> List.fold (fun (state:MemberActivity list) (current:MemberActivity) ->
@@ -51,17 +29,6 @@ type EntityService (ms:IMemberService,els:IElasticService,ti:ThisInstance) =
                 |> fun todo -> {current with Entities=todo}
                 |> fun todo -> todo::state
             ) []
-
-    static member private ExecuteQueryTasks = fun (direction:ChainDirection) (tasks:MemberActivity list) ->
-        tasks
-        |> List.map ( fun (task) ->
-            async {
-                // Create Async Requests
-                let! entities = EntityService.SearchEntitiesRemote direction task.Member.API task.Entities
-                return (task.Member, entities)
-            })
-        // Execute
-        |> (Async.Parallel >> Async.RunSynchronously)
 
     static member private MergeResults = fun (lastResult:Entity list) (iterationResult:(Member*Entity list)[]) ->
         iterationResult
@@ -104,6 +71,55 @@ type EntityService (ms:IMemberService,els:IElasticService,ti:ThisInstance) =
             |> List.collect (fun entity -> entity.InEntities)
         |> fun result -> entityIDs @ result
         |> List.distinct
+    
+    member private this.SearchEntitiesRemote = fun (direction:ChainDirection) (memberAPI:string) (entityIDs:string list) ->
+        async {
+
+            if entityIDs.IsEmpty
+            then return []
+            else
+
+            if ti.data.IsSome && ti.data.Value.API = memberAPI
+            then 
+                match direction with
+                | Upchain -> return (this:>IEntityService).LocalUpchainSearch entityIDs
+                | Downchain -> return (this:>IEntityService).LocalUpchainSearch entityIDs
+            else
+                
+            let url = 
+                (List.map ( fun id -> "id=" + id )
+                >> String.concat "&"
+                >> (fun arguments -> memberAPI + direction.ToString() + "/Multiple?" + arguments)) entityIDs
+
+            try
+                let! result = Http.AsyncRequestString url 
+                return 
+                    (JArray.Parse // Errors may also occur here.
+                    >> (fun parsed -> parsed.ToObject<Entity list>())
+                    >> List.filter( fun entity -> entity.Verify )) result
+            with
+            _ -> return []
+        }
+
+    member private this.SearchEntiyRemoteWithToken = fun (direction:ChainDirection) (memberAPI:string) (entityID:string) (token:string) ->
+        try
+            Http.RequestString (memberAPI + direction.ToString() + "/withtoken/" + entityID + "-" + token)
+            |> JArray.Parse
+            |> fun parsed -> parsed.ToObject<Entity list>()
+            |> List.filter( fun entity -> entity.Verify )
+        with
+        _ -> []
+
+    member private this.ExecuteQueryTasks = fun (direction:ChainDirection) (tasks:MemberActivity list) ->
+        tasks
+        |> List.map ( fun (task) ->
+            async {
+                // Create Async Requests
+                let! entities = this.SearchEntitiesRemote direction task.Member.API task.Entities
+                return (task.Member, entities)
+            })
+        // Execute
+        |> (Async.Parallel >> Async.RunSynchronously)
 
     member private this.AppendResultMembers = fun (mergedResult:Entity list) (lastHistory:MemberActivity list) ->
            mergedResult
@@ -151,7 +167,7 @@ type EntityService (ms:IMemberService,els:IElasticService,ti:ThisInstance) =
         
         let iterationResult =
             (EntityService.ComputeQueryTasks lastHistory 
-            >> EntityService.ExecuteQueryTasks direction) (ids)
+            >> this.ExecuteQueryTasks direction) (ids)
 
         // Merge Results (also with results so far)
         let mergedResult = EntityService.MergeResults lastResult iterationResult
@@ -183,19 +199,24 @@ type EntityService (ms:IMemberService,els:IElasticService,ti:ThisInstance) =
             |> fun initials -> this.ExecuteLocalUpchainSearch [] initials entityIDs
         
 
-        member this.CompleteSearch = fun (direction:ChainDirection) (memberID:string option) (entityIDs:string list) ->
+        member this.CompleteSearch = fun (direction:ChainDirection) (memberID:string option) (entityID:string) (entityToken:string option) ->
             match memberID with
             | None -> None
             | Some id -> ms.GetMemberRemote id
             |> function
             | Some remoteMember ->
-                match ti.data with
-                | Some thisInstance -> [{Member=thisInstance; Entities=[]};{Member=remoteMember; Entities=[]}]
-                | None -> [{Member=remoteMember; Entities=[]}]
+                match entityToken with
+                | Some token -> // If a token is provided, we prepend the token based search. The Token is re-attached to the ID
+                    this.SearchEntiyRemoteWithToken direction remoteMember.API entityID token
+                | None -> []
+                |> fun tokenBasedResult -> 
+                    match ti.data with
+                    | Some thisInstance -> tokenBasedResult, [{Member=thisInstance; Entities=[]};{Member=remoteMember; Entities=[]}]
+                    | None -> tokenBasedResult, [{Member=remoteMember; Entities=[]}]
             | None ->
                 match ti.data with
-                | Some thisInstance -> [{Member=thisInstance; Entities=[]}]
-                | None -> []
+                | Some thisInstance -> [], [{Member=thisInstance; Entities=[]}]
+                | None -> [], []
             |> function
-            | [] -> []
-            | prefill -> this.ExecuteCompleteSearch [] direction prefill entityIDs
+            | tokenBasedResult, [] -> tokenBasedResult
+            | tokenBasedResult, prefill -> this.ExecuteCompleteSearch tokenBasedResult direction prefill [entityID]

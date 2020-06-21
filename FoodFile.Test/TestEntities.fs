@@ -11,7 +11,8 @@ module TestEntities =
             // Entity Description
             {AtomID = "24CF"; EntityID="8EALKMS2Q7"; Version=1; 
             Information = Description ({Name="Strawberry Pallet" ; Certificates=[]});
-            Signatures=[]}
+            Signatures=[];
+            Sharing=Enabled}
             
             // Harvesting
             {AtomID = "E8RW"; EntityID="8EALKMS2Q7"; Version=1;
@@ -19,7 +20,8 @@ module TestEntities =
                                         Location = Some({Name=Some("Farm 3"); Coordinates="50.553291, 11.019047"}); 
                                         Timestamp = 1562167380L; 
                                         Responsible=Some(freshfruitfarmers.ID)});
-            Signatures=[]}
+            Signatures=[];
+            Sharing=Enabled}
 
             // Collecting
             {AtomID = "NZEU"; EntityID="8EALKMS2Q7"; Version=1;
@@ -27,7 +29,8 @@ module TestEntities =
                                 TrackPoints=
                                     [({Name=Some("FreshFruitFarmers Warehouse"); Coordinates="50.281290, 10.967620"}, 1562227920L)
                                 ]});
-            Signatures= []}
+            Signatures= [];
+            Sharing=ByToken}
 
             // Shipping
             {AtomID = "TTI5"; EntityID="8EALKMS2Q7"; Version=1;
@@ -35,7 +38,8 @@ module TestEntities =
                                 TrackPoints=
                                     [({Name=Some("YummyJam Facilty"); Coordinates="51.590067, 8.1050100"}, 1562231520L)
                                 ]});
-            Signatures= []}
+            Signatures= [];
+            Sharing=Enabled}
         ]
     }
 
@@ -46,7 +50,8 @@ module TestEntities =
             // Entity Description
             {AtomID = "LTWA"; EntityID="UGSESG22LL"; Version=1; 
             Information = Description ({Name="Sugar Beet Pallet" ; Certificates=[]});
-            Signatures= []}
+            Signatures= [];
+            Sharing=Enabled}
 
             // Harvesting
             {AtomID = "6EFZ"; EntityID="UGSESG22LL"; Version=1; 
@@ -54,7 +59,8 @@ module TestEntities =
                                         Location = Some({Name=Some("Field A4"); Coordinates="52.029034, 17.553938"}); 
                                         Timestamp = 1553698467L;
                                         Responsible=Some(sugarsilo.ID)});
-            Signatures= []}
+            Signatures= [];
+            Sharing=Enabled}
 
         ]
     }
@@ -67,7 +73,8 @@ module TestEntities =
             // Entity Description
             {AtomID = "I1O7"; EntityID="KVDBFFSAB4"; Version=1; 
             Information = Description ({Name="Gellant" ; Certificates=[]});
-            Signatures= []}
+            Signatures= [];
+            Sharing=Enabled}
 
             // Bought but no further information
         
@@ -81,7 +88,8 @@ module TestEntities =
             // Entity Description
             {AtomID = "EUGA"; EntityID="EIDDTPPDB2"; Version=1; 
             Information = Description ({Name="Preserving Sugar Pallet" ; Certificates=[]});
-            Signatures= []}
+            Signatures= [];
+            Sharing=Enabled}
 
             // Production
             {AtomID = "BCWG"; EntityID="EIDDTPPDB2"; Version=1;
@@ -89,7 +97,8 @@ module TestEntities =
                                         Location = None
                                         Responsible = Some(sugarsilo.ID);
                                         Timestamp = 1555303285L});
-            Signatures= []}
+            Signatures= [];
+            Sharing=Enabled}
 
             // Shipping
             {AtomID = "NCDQ"; EntityID="EIDDTPPDB2"; Version=1;
@@ -97,7 +106,8 @@ module TestEntities =
                                 TrackPoints=
                                     [({Name=Some("YummyJam Facilty"); Coordinates="51.590067, 8.1050100"}, 1555598311L)
                                 ]});
-            Signatures= []}
+            Signatures= [];
+            Sharing=Enabled}
         ]
     }
 
@@ -108,7 +118,8 @@ module TestEntities =
             // Entity Description
             {AtomID = "R1AL"; EntityID="6FGEMO4WX8"; Version=1; 
             Information = Description ({Name="Strawberry Jam Jar" ; Certificates=[]});
-            Signatures= []}
+            Signatures= [];
+            Sharing=Enabled}
 
             // Production
             {AtomID = "ZSOC"; EntityID="6FGEMO4WX8"; Version=1; 
@@ -116,7 +127,8 @@ module TestEntities =
                                         Location = Some({Name=Some("YummyJam Facilty"); Coordinates="51.590067, 8.1050100"})
                                         Responsible=Some(yummyjam.ID)
                                         Timestamp = 1568979091L});
-            Signatures= []}
+            Signatures= [];
+            Sharing=Enabled}
             
         ]
     }
@@ -128,7 +140,8 @@ module TestEntities =
             // Entity Description
             {AtomID = "TAEF"; EntityID="PMK9BG1YL5"; Version=1; 
             Information = Description ({Name="Strawberry Jam Jar" ; Certificates=[]});
-            Signatures= []}
+            Signatures= [];
+            Sharing=Enabled}
 
             // Production
             {AtomID = "MFEA"; EntityID="PMK9BG1YL5"; Version=1; 
@@ -136,7 +149,8 @@ module TestEntities =
                                         Location = Some({Name=Some("YummyJam Facilty"); Coordinates="51.590067, 8.1050100"})
                                         Responsible=Some(yummyjam.ID)
                                         Timestamp = 1568979091L});
-            Signatures= []}
+            Signatures= [];
+            Sharing=Enabled}
             
         ]
     }
@@ -148,7 +162,8 @@ module TestEntities =
             // Entity Description
             {AtomID = "0G3T"; EntityID="JVE8F98148"; Version=1; 
             Information = Description ({Name="Strawberry Jam Jar" ; Certificates=[]});
-            Signatures= []}
+            Signatures= [];
+            Sharing=ByTokenOrChain}
 
             // Production
             {AtomID = "OO4Q"; EntityID="JVE8F98148"; Version=1; 
@@ -156,7 +171,8 @@ module TestEntities =
                                         Location = Some({Name=Some("YummyJam Facilty"); Coordinates="51.590067, 8.1050100"})
                                         Responsible=Some(yummyjam.ID)
                                         Timestamp = 1568979091L});
-            Signatures= []}
+            Signatures= [];
+            Sharing=Enabled}
             
         ]
     }
@@ -168,7 +184,8 @@ module TestEntities =
             // Entity Description
             {AtomID = "JN2U"; EntityID="LL9ZOFC5EH"; Version=1; 
             Information = Description ({Name="Strawberry Jam Jar" ; Certificates=[]});
-            Signatures= []}
+            Signatures= [];
+            Sharing=ByToken}
 
             // Production
             {AtomID = "XF78"; EntityID="LL9ZOFC5EH"; Version=1; 
@@ -176,7 +193,8 @@ module TestEntities =
                                         Location = Some({Name=Some("YummyJam Facilty"); Coordinates="51.590067, 8.1050100"})
                                         Responsible=Some(yummyjam.ID)
                                         Timestamp = 1568979091L});
-            Signatures= []}
+            Signatures= [];
+            Sharing=Enabled}
             
         ]
     }
@@ -188,7 +206,8 @@ module TestEntities =
             // Entity Description
             {AtomID = "4BZD"; EntityID="1I2VHCWKJL"; Version=1; 
             Information = Description ({Name="Strawberry Jam Jar" ; Certificates=[]});
-            Signatures= []}
+            Signatures= [];
+            Sharing=Disabled}
 
             // Production
             {AtomID = "VS2Y"; EntityID="1I2VHCWKJL"; Version=1; 
@@ -196,9 +215,25 @@ module TestEntities =
                                         Location = Some({Name=Some("YummyJam Facilty"); Coordinates="51.590067, 8.1050100"})
                                         Responsible=Some(yummyjam.ID)
                                         Timestamp = 1568979091L});
-            Signatures= []}
+            Signatures= [];
+            Sharing=Enabled}
+
+            // Involvement
+            {AtomID = "9FO2"; EntityID="1I2VHCWKJL"; Version=1; 
+            Information = Involvement ({Member=freshfruitfarmers.ID});
+            Signatures= [];
+            Sharing=Enabled}
+
+            // Involvement
+            {AtomID = "9FO2"; EntityID="1I2VHCWKJL"; Version=1; 
+            Information = Involvement ({Member=sugarsilo.ID});
+            Signatures= [];
+            Sharing=Enabled}
             
         ]
     }
 
     let all = [erdbeeren; zuckerrueben; geliermittel; gelierzucker; jam1; jam2; jam3; jam4; jam5]
+    let yummyjamEntities = [jam1; jam2; jam3; jam4; jam5]
+    let sugarsiloEntities = [geliermittel; gelierzucker]
+    let freshfruitfarmerEntities = [erdbeeren; zuckerrueben]

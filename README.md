@@ -6,13 +6,16 @@ FoodFile is written in F# for ASP.Net Core 3 and implements the MVC pattern. Dat
 The frontend is built with React, Bootstrap and d3 for tree visualizations.
 
 ## Command-Line options
-All command line arguments are optional. The defaults (appSettings.json) are chosen to work with the [elasticsearch docker image](https://hub.docker.com/_/elasticsearch). It is recommended to provide your member-ID (--this).
+The defaults (appSettings.json) are chosen to work with the [elasticsearch docker image](https://hub.docker.com/_/elasticsearch). It is recommended to provide your member-ID (--this) and salt (--salt).
 
 ### --mode
 Specifies the execution mode of FoodFile. Can be one of regular, member or combined. The regular mode is for data recording and tracing. In member mode, the FoodFile instance serves as a membership provider (foodfile.org is a FoodFile instance running in member mode). As a participant of the FoodFile netowrk, choose regular mode. Combined mode is primarily intended as a convinience feature for development. Defaults to regular.
 
 ### --this
 Specifies the member-ID of this FoodFile instance. This is recommended in regular and combined mode; It does not have any effect in member mode. In regular and combined mode, FoodFile will work without this information but features will be limited. You can obtain a member-ID from [foodfile.org/membership](https://foodfile.org/membership) or the membership service specified with the --members option.
+
+### --salt
+Specifies the salt to use for sharing tokens. Provide a random string, semantically tied to your member-ID. Token based sharing os only secure if a salt is provided.
 
 ### --members
 Specifies the URL to the trusted membership provider. The provided URL is used in regular and combined mode; It does not have any effect in member mode. Defaults to https://foodfile.org/api/members/.

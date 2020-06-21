@@ -16,13 +16,20 @@ type GcReturn = {
 type GlobalController (ms:IMemberService,els:IElasticService, ens:IEntityService, config:IConfiguration) =
     inherit ControllerBase()
 
+    (*
+        ID-Format:
+        <member-ID>-<entity-ID>-<token>
+        where the member-ID and token are optional. A token is only allowed if a member-ID is provided.
+    *)
+
     [<HttpGet("downchain/{id}")>] // Jetzt wo hier string als return steht müssen wir ContentType JSon evtl manuell setzen.
     member __.GetDownchain (id:string) : string = // Member ID optional
 
         let entities =
             (function
-            | [|entityID|] -> ens.CompleteSearch Downchain None [entityID]
-            | [|memberID; entityID|] -> ens.CompleteSearch Downchain (Some memberID) [entityID]
+            | [|entityID|] -> ens.CompleteSearch Downchain None entityID None
+            | [|memberID; entityID|] -> ens.CompleteSearch Downchain (Some memberID) entityID None
+            | [|memberID; entityID; entityToken|] -> ens.CompleteSearch Downchain (Some memberID) entityID (Some entityToken)
             | _ -> []) (id.Split('-'))
         
         let members = ms.ExtractMembers entities
@@ -36,8 +43,9 @@ type GlobalController (ms:IMemberService,els:IElasticService, ens:IEntityService
 
         let entities =
             (function
-            | [|entityID|] -> ens.CompleteSearch Upchain None [entityID]
-            | [|memberID; entityID|] -> ens.CompleteSearch Upchain (Some memberID) [entityID]
+            | [|entityID|] -> ens.CompleteSearch Upchain None entityID None
+            | [|memberID; entityID|] -> ens.CompleteSearch Upchain (Some memberID) entityID None
+            | [|memberID; entityID; entityToken|] -> ens.CompleteSearch Upchain (Some memberID) entityID (Some entityToken)
             | _ -> []) (id.Split('-'))
 
         let members = ms.ExtractMembers entities

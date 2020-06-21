@@ -6,7 +6,9 @@ import axios from 'axios';
 function extractEntityID (searchterm)
 {
     var splitted = searchterm.split("-");
-    return splitted[splitted.length-1];
+    if (splitted.length < 3 )
+        return splitted[splitted.length-1];
+    return splitted[1]
 }
 
 export function Trace()
@@ -20,7 +22,7 @@ export function Trace()
       });
 
     useEffect(() => {
-        if (searchterm.length === 10 || searchterm.length=== 17)
+        if (searchterm.length === 10 || searchterm.length=== 17 || searchterm.length === 82)
         {
             setRequeststate("loading");
             axios.get('/api/entities/global/' + direction + "/" + searchterm)

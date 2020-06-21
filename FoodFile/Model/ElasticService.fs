@@ -42,6 +42,18 @@ type ElasticService(config:IConfiguration) =
                                     body = TextRequest creationCmd) |> ignore
         with _ -> ()
 
+    static member RemoveIndices = fun (host:string) (entityIndex:String) (memberIndex:String) ->
+        try
+            Http.RequestString ( host + entityIndex,
+                                 httpMethod = "DELETE",
+                                 headers = [ "Content-Type","application/json" ]) |> ignore
+        with _ -> ()
+        try
+            Http.RequestString ( host + memberIndex,
+                                 httpMethod = "DELETE",
+                                 headers = [ "Content-Type","application/json" ]) |> ignore
+        with _ -> ()
+
     member private this.GetDocuments = fun (query:string) (index:string) (ids:string list) ->
         ids
         |> JsonConvert.SerializeObject
