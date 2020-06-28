@@ -208,6 +208,10 @@ function generateHierarchy (direction, entities, members, rootID) {
 
 function placeTreeSVG (direction, entities, members, rootID, containerRef)
 {   
+    d3.select(containerRef).select("svg").remove();
+    if (entities.length < 1)
+        return
+
     var treeData = generateHierarchy(direction, entities, members, rootID);
 
     // set the dimensions and margins of the diagram
@@ -226,7 +230,6 @@ function placeTreeSVG (direction, entities, members, rootID, containerRef)
     // append the svg obgect to the body of the page
     // appends a 'group' element to 'svg'
     // moves the 'group' element to the top left margin
-    d3.select(containerRef).select("svg").remove();
     var svg = d3.select(containerRef).append("svg")
         .attr("width", width + margin.left + margin.right)
         .attr("height", height + margin.top + margin.bottom);
@@ -285,8 +288,8 @@ function EntityTree({direction, entities, members, rootID})
 
     useEffect(() => {
 
-        if (entities.length>0)
-            placeTreeSVG(direction, entities, members, rootID, containerRef.current);  
+        //if (entities.length>0)
+        placeTreeSVG(direction, entities, members, rootID, containerRef.current);  
         
         }, [entities.length,members.length]);
         /*

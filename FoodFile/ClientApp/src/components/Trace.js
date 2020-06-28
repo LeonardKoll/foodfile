@@ -33,6 +33,14 @@ export function Trace()
                 setRequeststate("error");
             });
         }
+        else
+        {
+            setSearchresult({
+                Entities: [],
+                Members: []
+            });
+            setRequeststate("");
+        }
     }, [searchterm, direction]);
 
     return (       
@@ -64,7 +72,7 @@ export function Trace()
             }
 
             <EntityTree direction={direction} entities={searchresult.Entities} members={searchresult.Members} rootID={extractEntityID(searchterm)} />
-            
+            <p>Hello!</p>
         </div>
     );
 }
