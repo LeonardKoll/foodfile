@@ -136,9 +136,21 @@ module TestEntities =
     let jam2 = {
         ID = "PMK9BG1YL5";
         Atoms = [
-            
+
             // Entity Description
             {AtomID = "TAEF"; EntityID="PMK9BG1YL5"; Version=1; 
+            Information = Description ({Name="Strawberry Jam Jarrrrrrr" ; Certificates=[]});
+            Signatures= [];
+            Sharing=Enabled}
+
+            // Entity Description
+            {AtomID = "TAEF"; EntityID="PMK9BG1YL5"; Version=3; 
+            Information = Description ({Name="Strawberry Jam Jar TWO" ; Certificates=[]});
+            Signatures= [];
+            Sharing=Enabled}
+
+            // Entity Description
+            {AtomID = "TAEF"; EntityID="PMK9BG1YL5"; Version=2; 
             Information = Description ({Name="Strawberry Jam Jar" ; Certificates=[]});
             Signatures= [];
             Sharing=Enabled}

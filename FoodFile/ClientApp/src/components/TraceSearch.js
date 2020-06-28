@@ -12,12 +12,12 @@ function TraceSearch ({setSearchterm, direction, setDirection})
             </form>
             </div>
 
-            <div class="btn-group btn-group-toggle mb-3" data-toggle="buttons">
-                <label class={(direction==="downchain" ? "active" : "") + " btn btn-secondary"}>
-                    <input type="radio" name="options" id="option1" autocomplete="off" onClick={() => setDirection("downchain")} />Trace to origin
+            <div className="btn-group btn-group-toggle mb-3" data-toggle="buttons">
+                <label className={(direction==="downchain" ? "active" : "") + " btn btn-secondary"}>
+                    <input type="radio" name="options" id="option1" autoComplete="off" onClick={() => setDirection("downchain")} />Trace to origin
                 </label>
-                <label class={(direction==="upchain" ? "active" : "") + " btn btn-secondary"}>
-                    <input type="radio" name="options" id="option2" autocomplete="off" onClick={() => setDirection("upchain")} />Trace to shelf
+                <label className={(direction==="upchain" ? "active" : "") + " btn btn-secondary"}>
+                    <input type="radio" name="options" id="option2" autoComplete="off" onClick={() => setDirection("upchain")} />Trace to shelf
                 </label>
             </div>
         </div>

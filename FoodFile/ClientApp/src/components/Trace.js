@@ -1,7 +1,9 @@
 import React, {useState, useEffect} from 'react';
 import TraceSearch from './TraceSearch';
-import EntityTree from "./EntityTree"
+import TraceTree from "./TraceTree"
+import TraceAtoms from "./TraceAtoms"
 import axios from 'axios';
+import {generateHierarchy, emptyHierarchyItem} from './TraceTreeUtils'
 
 function extractEntityID (searchterm)
 {
@@ -20,8 +22,11 @@ export function Trace()
         Entities:[],
         Members:[]
       });
+    const [displayentities, setDisplayentities] = useState([])
+    const [treedata, setTreedata] = useState(undefined)
 
     useEffect(() => {
+        var displayentities=[]
         if (searchterm.length === 10 || searchterm.length=== 17 || searchterm.length === 82)
         {
             setRequeststate("loading");
@@ -43,6 +48,23 @@ export function Trace()
         }
     }, [searchterm, direction]);
 
+    useEffect(() => {
+
+        const rootID = extractEntityID(searchterm)
+        const tD = generateHierarchy(
+            direction,
+            displayentities,
+            searchresult.Members,
+            rootID
+        );
+        
+        if (tD.children.length === 0)
+            setTreedata(undefined)
+        else 
+            setTreedata(tD)
+            
+    }, [displayentities.toString()]);
+
     return (       
         <div>
             <img className="img-fluid" src="/img/trace_cover.jpg" alt=""></img>
@@ -56,23 +78,23 @@ export function Trace()
             <TraceSearch setSearchterm={setSearchterm} direction={direction} setDirection={setDirection}/>
 
             { requeststate === "loading" &&
-                <div class="alert alert-secondary" role="alert">
+                <div className="alert alert-secondary" role="alert">
                     Processing your request...
                 </div>
             }
             { requeststate === "result" &&
-                <div class="alert alert-success" role="alert">
+                <div className="alert alert-success" role="alert">
                     Retreival completed.
                 </div>
             }
             { requeststate === "error" &&
-                <div class="alert alert-warning" role="alert">
+                <div className="alert alert-warning" role="alert">
                     Retreival failed.
                 </div>
             }
 
-            <EntityTree direction={direction} entities={searchresult.Entities} members={searchresult.Members} rootID={extractEntityID(searchterm)} />
-            <p>Hello!</p>
+            <TraceTree treeData={treedata} />
+            <TraceAtoms entities={searchresult.Entities} setDisplayentities={setDisplayentities} />
         </div>
     );
 }
