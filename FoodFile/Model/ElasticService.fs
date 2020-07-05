@@ -84,7 +84,7 @@ type ElasticService(config:IConfiguration) =
             Http.RequestString ( Host + index + "/_doc/" + id, httpMethod = "Put", headers = [ "Content-Type","application/json" ], body = TextRequest toSend)
         |> ignore
     
-    member private this.ConverToEntities = fun (toConvert:IEnumerable<JToken> option) ->
+    member private this.ConvertToEntities = fun (toConvert:IEnumerable<JToken> option) ->
         toConvert
         |> function
         | None -> []
@@ -100,7 +100,7 @@ type ElasticService(config:IConfiguration) =
         member this.GetEntitiesLocal = fun (entityIDs:string list) ->
             entityIDs
             |> this.GetByIDs EntityIndex
-            |> this.ConverToEntities
+            |> this.ConvertToEntities
 
         member this.GetEntityLocal = fun (entityID:string) ->
             [entityID]
@@ -126,7 +126,7 @@ type ElasticService(config:IConfiguration) =
             // For some reason ES requires the ids to be lowercase in the searchstring.
             |> List.map (fun (id:string) -> id.ToLower())
             |> this.GetDocuments ByInEntitiesQuery EntityIndex
-            |> this.ConverToEntities
+            |> this.ConvertToEntities
         
         // Member functions
 

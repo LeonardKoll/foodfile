@@ -237,7 +237,7 @@ module TestEntities =
             Sharing=Enabled}
 
             // Involvement
-            {AtomID = "9FO2"; EntityID="1I2VHCWKJL"; Version=1; 
+            {AtomID = "5KFD"; EntityID="1I2VHCWKJL"; Version=1; 
             Information = Involvement ({Member=sugarsilo.ID});
             Signatures= [];
             Sharing=Enabled}

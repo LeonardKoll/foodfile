@@ -4,10 +4,16 @@ open Microsoft.AspNetCore.Mvc
 open Newtonsoft.Json
 open Microsoft.Extensions.Configuration
 open System
+open Newtonsoft.Json.Linq
 
 type GcReturn = {
     Entities:Entity list;
     Members:Member list;
+}
+
+type VerifyRequest = {
+    CompleteID: string;
+    Members: string list
 }
 
 [<ApiController>]
@@ -53,6 +59,16 @@ type GlobalController (ms:IMemberService,els:IElasticService, ens:IEntityService
         |> JsonConvert.SerializeObject
         // ToDo: Error Handling.
         // Note: Die Funktion kann evtl weg weil wir immer Atome aber nicht ganze Docs transferieren
+
+
+    [<HttpPost("atom/verify")>]
+    member __.VerifyAtom ([<FromBody>] body:Object) : AtomHashSupportCount list =
+           body.ToString()
+           |> JObject.Parse
+           |> fun parseResult -> parseResult.ToObject<VerifyRequest>()
+           |> fun request ->
+                request.Members
+                |> ens.VerifyAtom request.CompleteID 
 
     interface IConfigurableController with
         member this.config = config

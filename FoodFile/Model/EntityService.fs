@@ -12,6 +12,7 @@ type IEntityService =
     abstract member LocalDownchainSearch : (string list -> Entity list)
     abstract member LocalUpchainSearch : (string list -> Entity list)
     abstract member CompleteSearch : (ChainDirection -> string option -> string -> string option -> Entity list)
+    abstract member VerifyAtom : (string -> string list -> AtomHashSupportCount list)
 
 type EntityService (ms:IMemberService,els:IElasticService,ti:ThisInstance) = 
 
@@ -190,6 +191,25 @@ type EntityService (ms:IMemberService,els:IElasticService,ti:ThisInstance) =
 
 
     interface IEntityService with
+       
+        member this.VerifyAtom = fun (completeID:string) (members:string list) ->
+            
+            members
+            |> ms.GetMembersRemote
+            |> List.map (fun memb -> memb.API + "atom/" + completeID + "/hash")
+            |> List.map (fun url -> async {
+                return! Http.AsyncRequestString url
+                })
+            |> Async.Parallel
+            |> Async.RunSynchronously
+            |> List.ofArray
+            |> List.filter (fun current -> current<>"")
+            |> List.countBy (fun hash -> hash)
+            |> List.map (fun (hash, count) -> {
+                CompleteID=completeID;
+                AtomHash=hash;
+                SupportCount=count;
+                })
 
         member this.LocalDownchainSearch = this.ExecuteLocalDownchainSearch [] []
 

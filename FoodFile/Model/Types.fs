@@ -7,6 +7,12 @@ type ProcessingResult<'TResult> =
     | Error of string
     | Result of 'TResult
 
+type AtomHashSupportCount = {
+    CompleteID: string;
+    AtomHash: string;
+    SupportCount: int;
+}
+
 type Member = {
     ID: string; // 6 Zeichen
     Name: string;

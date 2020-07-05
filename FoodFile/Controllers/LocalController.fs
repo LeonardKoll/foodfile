@@ -52,15 +52,37 @@ type LocalController (els:IElasticService, ens:IEntityService, config:IConfigura
         |> JsonConvert.SerializeObject
         // ToDo: Error Handling.
 
+    [<HttpGet("atom/{completeID}/hash")>]
+    member __.GetAtomHash(completeID:string) : string =   
+        match completeID.Split("-") with
+        | [|entityID; _; _|] ->
+            els.GetEntityLocal entityID
+            |> function
+            | Some entity ->
+                entity.Atoms
+                |> List.tryFind (fun atom -> atom.CompleteID=completeID)
+                |> function
+                | Some atom -> 
+                    atom.Information
+                    |> JsonConvert.SerializeObject
+                    |> __.GetHash
+                | None -> ""
+            | None -> ""
+        | _ -> ""
+
+    member private __.GetHash (toHash:string) : string =
+        toHash
+        |> System.Text.Encoding.UTF8.GetBytes
+        |> (new SHA256Managed()).ComputeHash
+        |> Array.map (fun (x : byte) -> System.String.Format("{0:X2}", x))
+        |> String.concat System.String.Empty
+
     member private __.ApplySharingPolicy tokenInfo (entities:Entity list) : Entity list =
         //Check, if the token is applicable for one of the entities
         match tokenInfo with
         | Some (tokenEntity:string,tokenValue:string) -> // Verify
             tokenEntity + config.GetValue<string>("salt")
-            |> System.Text.Encoding.UTF8.GetBytes
-            |> (new SHA256Managed()).ComputeHash
-            |> Array.map (fun (x : byte) -> System.String.Format("{0:X2}", x))
-            |> String.concat System.String.Empty
+            |> __.GetHash
             |> fun result -> result = tokenValue.ToUpper()
             |> function
                 | true ->
