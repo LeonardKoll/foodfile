@@ -50,6 +50,8 @@ export function getVersionLists (entities) {
 }
 
 // atomVersions = List of Atom-CompleteID (eg PMK9BG1YL5-TAEF-1)
+// Takes the original Entities and a List of Complite Atom IDs and returns Entities but only containing the specified Atoms.
+// This function is used to connect the user selection with what needs to be written into displayentities.
 export function prepareEntities (entities, atomVersions) {
 
     var toReturn = [];

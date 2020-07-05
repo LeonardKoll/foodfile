@@ -16,17 +16,32 @@ function extractEntityID (searchterm)
 export function Trace()
 {
     const [direction, setDirection] = useState("downchain");
+    // User Input
     const [searchterm, setSearchterm] = useState("")
+    // String for status information displayed on Page
     const [requeststate, setRequeststate] = useState("")
+    // Full search result
     const [searchresult, setSearchresult] = useState({
         Entities:[],
         Members:[]
       });
+    // Entities, but only containing those atom (versions) which should be displayed
     const [displayentities, setDisplayentities] = useState([])
+    // Compiled Tree  
     const [treedata, setTreedata] = useState(undefined)
 
+    /*
+      Process:
+      User types search string. If string has correct length, search is triggered.
+      Search comes back and is stored in Searchresult
+      Entities of Searchresult alre passed to TraceAtoms Component. 
+      There they get filtered and the result is put into displayentities
+      Upon change fo displayentities, the Compute Tree Hook is triggered.
+      Result is stored in treedata which is then used for rendering in the SearchTree Component.
+    */
+
+    // Trigger Search Hook
     useEffect(() => {
-        var displayentities=[]
         if (searchterm.length === 10 || searchterm.length=== 17 || searchterm.length === 82)
         {
             setRequeststate("loading");
@@ -48,6 +63,7 @@ export function Trace()
         }
     }, [searchterm, direction]);
 
+    //Compute Tree Hook
     useEffect(() => {
 
         const rootID = extractEntityID(searchterm)
@@ -57,13 +73,18 @@ export function Trace()
             searchresult.Members,
             rootID
         );
-        
+
         if (tD.children.length === 0)
+        {
             setTreedata(undefined)
+        }
         else 
+        {
             setTreedata(tD)
+        }
             
-    }, [displayentities.toString()]);
+            
+    }, [displayentities]);
 
     return (       
         <div>

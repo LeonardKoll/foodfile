@@ -91,6 +91,12 @@ function getCreationAtom (atoms)
     return null; 
 }
 
+function getInEntities(entity)
+{
+    const creation = getCreationAtom(entity.Atoms)
+    return creation.Information.Fields[0].InEntities
+}
+
 function getEntityName (atoms, rootID)
 {
     for (var i=0; i<atoms.length; i++)
@@ -109,8 +115,11 @@ function getOutEntities (entityID, entities)
     var outEntities = []
 
     for (var i=0; i<entities.length; i++)
-        if (entities[i].InEntities.includes(entityID))
+    {
+        const inEntities = getInEntities(entities[i])
+        if (inEntities.includes(entityID))
             outEntities.push(entities[i].ID);
+    }
     
     return outEntities;
 }
