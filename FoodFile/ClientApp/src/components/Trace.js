@@ -115,7 +115,7 @@ export function Trace()
             }
 
             <TraceTree treeData={treedata} />
-            <TraceAtoms entities={searchresult.Entities} setDisplayentities={setDisplayentities} />
+            <TraceAtoms entities={searchresult.Entities} setDisplayentities={setDisplayentities} members={searchresult.Members} />
         </div>
     );
 }

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { getVersionLists, prepareEntities } from "./TraceAtomsUtils";
+import VerifyAtom from "./VerifyAtom";
 
 function handleSelection(selected, setSelected, event) {
   const idParts = event.target.value.split("-")
@@ -14,7 +15,7 @@ function handleSelection(selected, setSelected, event) {
   setSelected(newSelected);
 }
 
-function createTableRow(eaID, atomVersions, selected, setSelected) {
+function createTableRow(eaID, atomVersions, selected, setSelected, members) {
   const radios = atomVersions.map((ver) => (
     <label
       className={
@@ -34,6 +35,13 @@ function createTableRow(eaID, atomVersions, selected, setSelected) {
     </label>
   ));
 
+  const CompleteID = selected.find (c => c.startsWith(eaID))
+  const Members = members.map (c => c.ID)
+  const verifyRequestData = {
+    CompleteID,
+    Members
+  }
+
   return (
     <tr key={eaID}>
       <td>{eaID}</td>
@@ -42,22 +50,25 @@ function createTableRow(eaID, atomVersions, selected, setSelected) {
           {radios}
         </div>
       </td>
+      <td>
+        <VerifyAtom verifyRequestData={verifyRequestData}/>
+      </td>
     </tr>
   );
 }
 
-function createTableRows(entities, selected, setSelected) {
+function createTableRows(entities, selected, setSelected, members) {
   const versionLists = getVersionLists(entities);
 
   let toReturn = [];
   for (const [eaID, versionList] of Object.entries(versionLists)) {
-    toReturn.push(createTableRow(eaID, versionList, selected, setSelected));
+    toReturn.push(createTableRow(eaID, versionList, selected, setSelected, members));
   }
 
   return toReturn;
 }
 
-function TraceAtoms({ entities, setDisplayentities }) {
+function TraceAtoms({ entities, setDisplayentities, members }) {
   const [selected, setSelected] = useState([]);
 
   useEffect(() => {
@@ -77,14 +88,15 @@ function TraceAtoms({ entities, setDisplayentities }) {
   return (
     <div>
       {entities.length > 0 && (
-        <table className="mt-4">
+        <table className="mt-4 table">
           <thead>
             <tr>
               <th>Entity - Atom</th>
               <th>Version</th>
+              <th>Verify</th>
             </tr>
           </thead>
-          <tbody>{createTableRows(entities, selected, setSelected)}</tbody>
+          <tbody>{createTableRows(entities, selected, setSelected, members)}</tbody>
         </table>
       )}
     </div>
