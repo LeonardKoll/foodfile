@@ -70,5 +70,13 @@ type GlobalController (ms:IMemberService,els:IElasticService, ens:IEntityService
                 request.Members
                 |> ens.VerifyAtom request.CompleteID 
 
+    [<HttpPost("fetch")>]
+    member __.Fetch([<FromBody>] body:Object) =
+        
+        body.ToString()
+        |> JArray.Parse
+        |> fun parseResult -> parseResult.ToObject<string list>()
+        |> ens.FetchAll
+
     interface IConfigurableController with
         member this.config = config

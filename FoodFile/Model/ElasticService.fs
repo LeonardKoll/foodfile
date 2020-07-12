@@ -17,7 +17,7 @@ type IElasticService =
     abstract member GetMemberLocal : (string -> Member option)
     abstract member WriteMember : (Member -> unit)
     abstract member DeleteMember : (string -> unit)
-
+    abstract member GetAllEntities : (unit -> Entity list)
 
 type ElasticService(config:IConfiguration) =
 
@@ -27,6 +27,7 @@ type ElasticService(config:IConfiguration) =
 
     static let ByIDsQuery = "{\"from\":0,\"size\":10000,\"query\": {\"ids\" : {\"values\" : #IDs }}}"
     static let ByInEntitiesQuery = "{\"from\":0,\"size\":10000,\"query\": {\"bool\": {\"filter\": {\"terms\": {\"InEntities\": #IDs }}}}}"
+    static let AllQuery = "{\"query\": {\"match_all\": {} }}"
 
     static member InitIndices = fun (host:string) (entityIndex:String) (memberIndex:String) (creationCmd:string) ->
         try
@@ -95,7 +96,11 @@ type ElasticService(config:IConfiguration) =
                     if entity.Verify then entity::state else state
                 ) []
 
-    interface IElasticService with     
+    interface IElasticService with  
+    
+        member this.GetAllEntities = fun () ->
+            this.GetDocuments AllQuery EntityIndex []
+            |> this.ConvertToEntities
 
         member this.GetEntitiesLocal = fun (entityIDs:string list) ->
             entityIDs

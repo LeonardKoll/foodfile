@@ -13,6 +13,7 @@ type IEntityService =
     abstract member LocalUpchainSearch : (string list -> Entity list)
     abstract member CompleteSearch : (ChainDirection -> string option -> string -> string option -> Entity list)
     abstract member VerifyAtom : (string -> string list -> AtomHashSupportCount list)
+    abstract member FetchAll : (string list -> unit)
 
 type EntityService (ms:IMemberService,els:IElasticService,ti:ThisInstance) = 
 
@@ -192,6 +193,33 @@ type EntityService (ms:IMemberService,els:IElasticService,ti:ThisInstance) =
 
     interface IEntityService with
        
+        member this.FetchAll = fun (members:string list) ->
+            members
+            |> ms.GetMembersRemote
+            |> List.map (fun memb -> memb.API + "everything")
+            |> List.map (fun url -> async {
+                return! Http.AsyncRequestString url
+                })
+            |> Async.Parallel
+            |> Async.RunSynchronously
+            |> List.ofArray
+            |> List.map (fun result ->
+                result
+                |> JArray.Parse
+                |> fun parsed -> parsed.ToObject<Entity list>()
+                |> List.filter( fun entity -> entity.Verify ))
+            |> fun remoteResults -> 
+                els.GetAllEntities () :: remoteResults
+            |> List.concat
+            |> List.fold (fun (state:Entity list) (current:Entity) ->
+                current.MergeInto state
+                ) []
+            |> List.iter (fun toSave -> els.WriteEntity toSave)
+
+
+            
+
+
         member this.VerifyAtom = fun (completeID:string) (members:string list) ->
             
             members

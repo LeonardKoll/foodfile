@@ -20,6 +20,12 @@ type LocalController (els:IElasticService, ens:IEntityService, config:IConfigura
         with token only allowed at the withtoken methods
     *)
 
+    [<HttpGet("everything")>]
+    member __.GetEverything() : string =
+        els.GetAllEntities ()
+        |> __.ApplySharingPolicy None
+        |> JsonConvert.SerializeObject
+
     [<HttpGet("downchain/{id}")>] // Jetzt wo hier string als return steht müssen wir ContentType JSon evtl manuell setzen.
     member __.GetDownchain([<FromQuery>] id:string array) : string = //Multiple
         ens.LocalDownchainSearch (Array.toList id)

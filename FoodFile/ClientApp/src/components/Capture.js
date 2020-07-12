@@ -6,6 +6,8 @@ export function Capture()
     const exampleAtom =[{ "AtomID": "ZSOC", "EntityID": "6FGEMO4WX8", "Version": 1,"Information": {"Case": "Creation", "Fields": [{"InEntities": [ "8EALKMS2Q7","EIDDTPPDB2"],"Responsible": { "Case": "Some","Fields": ["8X55N4"]}, "Location": {"Case": "Some","Fields": [{"Name": {"Case": "Some","Fields": ["YummyJam Facilty" ]},"Coordinates": "51.590067, 8.1050100"}] },"Timestamp": 1568979091 }] },"Signatures": [],"CompleteID": "6FGEMO4WX8-ZSOC-1"}];
 
     const [atoms, setAtoms] = useState("[]");
+    const [members, setMembers] = useState("")
+    const [fetchResult, setFetchResult] = useState("")
     const [result, setResult] = useState({Case:""})
 
     const fireRequest = () => {
@@ -15,6 +17,20 @@ export function Capture()
             setResult(response.data);
         }).catch (err => {
             setResult({Case:"Error", Fields:["An error occured."]})
+        });
+    }
+
+    const fireFetch = () => {
+        setFetchResult({Case:"loading"});
+
+        console.log(members)
+
+        axios.post('/api/entities/global/fetch', members
+        ).then (response =>  {
+            setFetchResult("ok");
+        }).catch (err => {
+            console.log(err)
+            setFetchResult("err")
         });
     }
 
@@ -51,6 +67,35 @@ export function Capture()
                     {result.Fields[0]}
                 </div>
             }
+
+            <hr/>
+
+            <h1 className="mt-5 mb-5">Fetch</h1>
+            <p>
+                FoodFile can fetch the latest state from other FoodFile members.
+                Enter the FoodFile member IDs you whish to fetch from below and click the fetch button to start the process.
+            </p>
+            <textarea   className="form-control" 
+                        rows="1" placeholder="HOG6XJ, S5BHU9, 8XX99T"
+                        onChange={(event) => setMembers(event.target.value.replace(/\s/g,'').split(","))}></textarea>
+            <button type="submit" className="btn btn-primary mb-3 mt-3" onClick={fireFetch}>FETCH</button>
+
+            { fetchResult === "loading" &&
+                <div className="alert alert-secondary" role="alert">
+                    Processing your request...
+                </div>
+            }
+            { fetchResult === "ok" &&
+                <div className="alert alert-success" role="alert">
+                    Your fetch request was successful.
+                </div>
+            }
+            { fetchResult === ("err") &&
+                <div className="alert alert-warning" role="alert">
+                    Something went wrong.
+                </div>
+            }
+
         </div>
     );
 }
