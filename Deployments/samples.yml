@@ -1,0 +1,176 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: freshfruitfarmers-service
+spec:
+  selector:
+    app: freshfruitfarmers
+  type: LoadBalancer
+  ports:
+  - name: http
+    protocol: TCP
+    port: 80
+    targetPort: 80
+  - name: https
+    protocol: TCP
+    port: 443
+    targetPort: 443
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: freshfruitfarmers-deployment
+spec:
+  selector:
+    matchLabels:
+      app: freshfruitfarmers
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: freshfruitfarmers
+    spec:
+      containers:
+      - name: foodfile
+        image: leonardkoll/foodfile:thesis
+        ports:
+        - containerPort: 80
+        - containerPort: 443
+        args:
+        - "--elastic=http://localhost:9200/"
+        - "--this=HOG6XJ"
+      - name: elasticsearch
+        image: elasticsearch:7.5.0
+        ports:
+        - containerPort: 9200
+        volumeMounts:
+        - mountPath: /usr/share/elasticsearch/data
+          name: es-volume
+        env:
+        - name: discovery.type
+          value: single-node
+        securityContext:
+          capabilities:
+            add:
+            - IPC_LOCK
+      volumes:
+      - name: es-volume
+        emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: sugarsilo-service
+spec:
+  selector:
+    app: sugarsilo
+  type: LoadBalancer
+  ports:
+  - name: http
+    protocol: TCP
+    port: 80
+    targetPort: 80
+  - name: https
+    protocol: TCP
+    port: 443
+    targetPort: 443
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sugarsilo-deployment
+spec:
+  selector:
+    matchLabels:
+      app: sugarsilo
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: sugarsilo
+    spec:
+      containers:
+      - name: foodfile
+        image: leonardkoll/foodfile:thesis
+        ports:
+        - containerPort: 80
+        - containerPort: 443
+        args:
+        - "--elastic=http://localhost:9200/"
+        - "--this=8XX99T"
+      - name: elasticsearch
+        image: elasticsearch:7.5.0
+        ports:
+        - containerPort: 9200
+        volumeMounts:
+        - mountPath: /usr/share/elasticsearch/data
+          name: es-volume
+        env:
+        - name: discovery.type
+          value: single-node
+        securityContext:
+          capabilities:
+            add:
+            - IPC_LOCK
+      volumes:
+      - name: es-volume
+        emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: yummyjam-service
+spec:
+  selector:
+    app: yummyjam
+  type: LoadBalancer
+  ports:
+  - name: http
+    protocol: TCP
+    port: 80
+    targetPort: 80
+  - name: https
+    protocol: TCP
+    port: 443
+    targetPort: 443
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: yummyjam-deployment
+spec:
+  selector:
+    matchLabels:
+      app: yummyjam
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: yummyjam
+    spec:
+      containers:
+      - name: foodfile
+        image: leonardkoll/foodfile:thesis
+        ports:
+        - containerPort: 80
+        - containerPort: 443
+        args:
+        - "--elastic=http://localhost:9200/"
+        - "--this=S5BHU9"
+      - name: elasticsearch
+        image: elasticsearch:7.5.0
+        ports:
+        - containerPort: 9200
+        volumeMounts:
+        - mountPath: /usr/share/elasticsearch/data
+          name: es-volume
+        env:
+        - name: discovery.type
+          value: single-node
+        securityContext:
+          capabilities:
+            add:
+            - IPC_LOCK
+      volumes:
+      - name: es-volume
+        emptyDir: {}
