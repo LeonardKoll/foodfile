@@ -11,10 +11,10 @@ spec:
     protocol: TCP
     port: 80
     targetPort: 80
-  - name: https
+  - name: elastic
     protocol: TCP
-    port: 443
-    targetPort: 443
+    port: 9200
+    targetPort: 9200
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -70,10 +70,10 @@ spec:
     protocol: TCP
     port: 80
     targetPort: 80
-  - name: https
+  - name: elastic
     protocol: TCP
-    port: 443
-    targetPort: 443
+    port: 9200
+    targetPort: 9200
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -129,10 +129,10 @@ spec:
     protocol: TCP
     port: 80
     targetPort: 80
-  - name: https
+  - name: elastic
     protocol: TCP
-    port: 443
-    targetPort: 443
+    port: 9200
+    targetPort: 9200
 ---
 apiVersion: apps/v1
 kind: Deployment
