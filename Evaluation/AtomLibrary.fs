@@ -59,7 +59,7 @@ let ps_1_cr_1 fffId ssId yjId = {
 
 let jj_1_cr_1 fffId ssId yjId = {
     AtomID = "ZSOC"; EntityID=jj_1; Version=1; 
-    Information = Creation ({   InEntities = [sb_1; ps_1]; 
+    Information = Creation ({   InEntities = [st_1; ps_1]; 
                                 Location = Some({Name=Some("YummyJam Facilty"); Coordinates="51.590067, 8.1050100"})
                                 Responsible=Some(yjId)
                                 Timestamp = 1568979091L});
@@ -68,7 +68,7 @@ let jj_1_cr_1 fffId ssId yjId = {
 
 let jj_2_cr_1 fffId ssId yjId = {
     AtomID = "MFEA"; EntityID=jj_2; Version=1; 
-    Information = Creation ({   InEntities = [sb_1; ps_1]; 
+    Information = Creation ({   InEntities = [st_1; ps_1]; 
                                 Location = Some({Name=Some("YummyJam Facilty"); Coordinates="51.590067, 8.1050100"})
                                 Responsible=Some(yjId)
                                 Timestamp = 1568979091L});
@@ -77,7 +77,7 @@ let jj_2_cr_1 fffId ssId yjId = {
 
 let jj_3_cr_1 fffId ssId yjId = {
     AtomID = "OO4Q"; EntityID=jj_3; Version=1; 
-    Information = Creation ({   InEntities = [sb_1; ps_1]; 
+    Information = Creation ({   InEntities = [st_1; ps_1]; 
                                 Location = Some({Name=Some("YummyJam Facilty"); Coordinates="51.590067, 8.1050100"})
                                 Responsible=Some(yjId)
                                 Timestamp = 1568979091L});
@@ -86,7 +86,7 @@ let jj_3_cr_1 fffId ssId yjId = {
 
 let jj_4_cr_1 fffId ssId yjId = {
     AtomID = "JN2U"; EntityID=jj_4; Version=1; 
-    Information = Creation ({   InEntities = [sb_1; ps_1]; 
+    Information = Creation ({   InEntities = [st_1; ps_1]; 
                                 Location = Some({Name=Some("YummyJam Facilty"); Coordinates="51.590067, 8.1050100"})
                                 Responsible=Some(yjId)
                                 Timestamp = 1568979091L});
@@ -95,7 +95,7 @@ let jj_4_cr_1 fffId ssId yjId = {
 
 let jj_5_cr_1 fffId ssId yjId = {
     AtomID = "XF78"; EntityID=jj_5; Version=1; 
-    Information = Creation ({   InEntities = [sb_1; ps_1]; 
+    Information = Creation ({   InEntities = [st_1; ps_1]; 
                                 Location = Some({Name=Some("YummyJam Facilty"); Coordinates="51.590067, 8.1050100"})
                                 Responsible=Some(yjId)
                                 Timestamp = 1568979091L});
@@ -134,7 +134,7 @@ let ps_1_tr_1 fffId ssId yjId = {
 // Descriptions
 
 let st_1_ds_1 fffId ssId yjId = {
-    AtomID = "24CF"; EntityID=sb_1; Version=1; 
+    AtomID = "24CF"; EntityID=st_1; Version=1; 
     Information = Description ({Name="Strawberry Pallet" ; Certificates=[]});
     Signatures=[];
     Sharing=Enabled}
@@ -184,5 +184,31 @@ let jj_4_ds_1 fffId ssId yjId = {
 let jj_5_ds_1 fffId ssId yjId = {
     AtomID = "4BZD"; EntityID=jj_5; Version=1; 
     Information = Description ({Name="Strawberry Jam Jar" ; Certificates=[]});
+    Signatures= [];
+    Sharing=Enabled}
+
+// Involvement
+
+let ff_1_iv_1 fffId ssId yjId = {
+    AtomID = "9FO2"; EntityID=st_1; Version=1; 
+    Information = Involvement ({Member=yjId});
+    Signatures= [];
+    Sharing=Enabled}
+
+let ss_1_iv_1 fffId ssId yjId = {
+    AtomID = "834ID"; EntityID=ps_1; Version=1; 
+    Information = Involvement ({Member=yjId});
+    Signatures= [];
+    Sharing=Enabled}
+
+let jj_1_iv_1 fffId ssId yjId = {
+    AtomID = "WID9"; EntityID=ps_1; Version=1; 
+    Information = Involvement ({Member=ssId});
+    Signatures= [];
+    Sharing=Enabled}
+
+let jj_2_iv_1 fffId ssId yjId = {
+    AtomID = "M2CK"; EntityID=st_1; Version=1; 
+    Information = Involvement ({Member=fffId});
     Signatures= [];
     Sharing=Enabled}

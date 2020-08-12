@@ -19,3 +19,13 @@ let basic = {
                         @ [jj_4_cr_1; jj_4_ds_1] 
                         @ [jj_5_cr_1; jj_5_ds_1]
 }
+
+let basic_linked = {
+    FreshFruitFarmers = basic.FreshFruitFarmers
+                        @ [ff_1_iv_1]   // trawberries
+    SugarSilo =         basic.SugarSilo
+                        @ [ss_1_iv_1] // Preserving Sugar
+    YummyJam =          basic.YummyJam
+                        @ [jj_1_iv_1]   // Preserving Sugar
+                        @ [jj_2_iv_1]  // Strawberries
+}
