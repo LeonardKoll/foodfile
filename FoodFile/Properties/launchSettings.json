@@ -2,7 +2,7 @@
   "profiles": {
     "Logic": {
       "commandName": "Project",
-      "commandLineArgs": "--elastic http://localhost:9200/ --mode combined --this S5BHU9 --delay 0 --members https://localhost:5001/api/members/",
+      "commandLineArgs": "--elastic http://localhost:9200/ --delay 0 --members https://foodfile.org/api/members/",
       "launchBrowser": true,
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"

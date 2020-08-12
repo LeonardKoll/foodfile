@@ -50,7 +50,7 @@ let sb_1_cr_1 fffId ssId yjId = {
 
 let ps_1_cr_1 fffId ssId yjId = {
     AtomID = "BCWG"; EntityID=ps_1; Version=1;
-    Information = Creation ({   InEntities = [sb_1; ps_1]; 
+    Information = Creation ({   InEntities = [sb_1; ge_1]; 
                                 Location = None
                                 Responsible = Some(ssId);
                                 Timestamp = 1555303285L});
