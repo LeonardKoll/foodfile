@@ -2,7 +2,7 @@
   "profiles": {
     "Evaluation": {
       "commandName": "Project",
-      "commandLineArgs": "/apply hello"
+      "commandLineArgs": "/apply basic"
     }
   }
 }

@@ -11,13 +11,26 @@ open FoodFile
     cr - creation
     dt - destruction
     tr - transfer
-    dc - description
+    ds - description
     iv - involvement
     de - deleted
 *)
 
-let st_cr fffId ssId yjId = {
-    AtomID = "E8RW"; EntityID="8EALKMS2Q7"; Version=1;
+// IDs
+let st_1 = "8EALKMS2Q7"
+let sb_1 = "UGSESG22LL"
+let ps_1 = "EIDDTPPDB2"
+let ge_1 = "KVDBFFSAB4"
+let jj_1 = "6FGEMO4WX8"
+let jj_2 = "PMK9BG1YL5"
+let jj_3 = "JVE8F98148"
+let jj_4 = "LL9ZOFC5EH"
+let jj_5 = "1I2VHCWKJL"
+
+// Creations
+
+let st_1_cr_1 fffId ssId yjId = {
+    AtomID = "E8RW"; EntityID=st_1; Version=1;
     Information = Creation ({   InEntities = []; 
                                 Location = Some({Name=Some("Farm 3"); Coordinates="50.553291, 11.019047"}); 
                                 Timestamp = 1562167380L; 
@@ -26,11 +39,150 @@ let st_cr fffId ssId yjId = {
     Sharing=Enabled
     }
 
-let jj_tr fffId ssId yjId = {
-    AtomID = "NCDQ"; EntityID="EIDDTPPDB2"; Version=1;
+let sb_1_cr_1 fffId ssId yjId = {
+    AtomID = "6EFZ"; EntityID=sb_1; Version=1; 
+    Information = Creation ({   InEntities = []; 
+                                Location = Some({Name=Some("Field A4"); Coordinates="52.029034, 17.553938"}); 
+                                Timestamp = 1553698467L;
+                                Responsible=Some(ssId)});
+    Signatures= [];
+    Sharing=Enabled}
+
+let ps_1_cr_1 fffId ssId yjId = {
+    AtomID = "BCWG"; EntityID=ps_1; Version=1;
+    Information = Creation ({   InEntities = [sb_1; ps_1]; 
+                                Location = None
+                                Responsible = Some(ssId);
+                                Timestamp = 1555303285L});
+    Signatures= [];
+    Sharing=Enabled}
+
+let jj_1_cr_1 fffId ssId yjId = {
+    AtomID = "ZSOC"; EntityID=jj_1; Version=1; 
+    Information = Creation ({   InEntities = [sb_1; ps_1]; 
+                                Location = Some({Name=Some("YummyJam Facilty"); Coordinates="51.590067, 8.1050100"})
+                                Responsible=Some(yjId)
+                                Timestamp = 1568979091L});
+    Signatures= [];
+    Sharing=Enabled}
+
+let jj_2_cr_1 fffId ssId yjId = {
+    AtomID = "MFEA"; EntityID=jj_2; Version=1; 
+    Information = Creation ({   InEntities = [sb_1; ps_1]; 
+                                Location = Some({Name=Some("YummyJam Facilty"); Coordinates="51.590067, 8.1050100"})
+                                Responsible=Some(yjId)
+                                Timestamp = 1568979091L});
+    Signatures= [];
+    Sharing=Enabled}
+
+let jj_3_cr_1 fffId ssId yjId = {
+    AtomID = "OO4Q"; EntityID=jj_3; Version=1; 
+    Information = Creation ({   InEntities = [sb_1; ps_1]; 
+                                Location = Some({Name=Some("YummyJam Facilty"); Coordinates="51.590067, 8.1050100"})
+                                Responsible=Some(yjId)
+                                Timestamp = 1568979091L});
+    Signatures= [];
+    Sharing=Enabled}
+
+let jj_4_cr_1 fffId ssId yjId = {
+    AtomID = "JN2U"; EntityID=jj_4; Version=1; 
+    Information = Creation ({   InEntities = [sb_1; ps_1]; 
+                                Location = Some({Name=Some("YummyJam Facilty"); Coordinates="51.590067, 8.1050100"})
+                                Responsible=Some(yjId)
+                                Timestamp = 1568979091L});
+    Signatures= [];
+    Sharing=Enabled}
+
+let jj_5_cr_1 fffId ssId yjId = {
+    AtomID = "XF78"; EntityID=jj_5; Version=1; 
+    Information = Creation ({   InEntities = [sb_1; ps_1]; 
+                                Location = Some({Name=Some("YummyJam Facilty"); Coordinates="51.590067, 8.1050100"})
+                                Responsible=Some(yjId)
+                                Timestamp = 1568979091L});
+    Signatures= [];
+    Sharing=Enabled}
+
+// Transfer
+
+let st_1_tr_1 fffId ssId yjId = {
+    AtomID = "NZEU"; EntityID=st_1; Version=1;
+    Information = Transfer ({  Responsible=Some(fffId);
+                        TrackPoints=
+                            [({Name=Some("FreshFruitFarmers Warehouse"); Coordinates="50.281290, 10.967620"}, 1562227920L)
+                        ]});
+    Signatures= [];
+    Sharing=ByToken}
+
+let st_1_tr_2 fffId ssId yjId = {
+    AtomID = "TTI5"; EntityID=st_1; Version=1;
+    Information = Transfer ({  Responsible=Some(fffId);
+                        TrackPoints=
+                            [({Name=Some("YummyJam Facilty"); Coordinates="51.590067, 8.1050100"}, 1562231520L)
+                        ]});
+    Signatures= [];
+    Sharing=Enabled}
+
+let ps_1_tr_1 fffId ssId yjId = {
+    AtomID = "NCDQ"; EntityID=ps_1; Version=1;
     Information = Transfer ({  Responsible=Some(ssId);
                         TrackPoints=
                             [({Name=Some("YummyJam Facilty"); Coordinates="51.590067, 8.1050100"}, 1555598311L)
                         ]});
+    Signatures= [];
+    Sharing=Enabled}
+
+// Descriptions
+
+let st_1_ds_1 fffId ssId yjId = {
+    AtomID = "24CF"; EntityID=sb_1; Version=1; 
+    Information = Description ({Name="Strawberry Pallet" ; Certificates=[]});
+    Signatures=[];
+    Sharing=Enabled}
+
+let sb_1_ds_1 fffId ssId yjId = {
+    AtomID = "LTWA"; EntityID="UGSESG22LL"; Version=1; 
+    Information = Description ({Name="Sugar Beet Pallet" ; Certificates=[]});
+    Signatures= [];
+    Sharing=Enabled}
+
+let ge_1_ds_1 fffId ssId yjId = {
+    AtomID = "I1O7"; EntityID=ge_1; Version=1; 
+    Information = Description ({Name="Gellant" ; Certificates=[]});
+    Signatures= [];
+    Sharing=Enabled}
+
+let ps_1_ds_1 fffId ssId yjId = {
+    AtomID = "EUGA"; EntityID=ps_1; Version=1; 
+    Information = Description ({Name="Preserving Sugar Pallet" ; Certificates=[]});
+    Signatures= [];
+    Sharing=Enabled}
+
+let jj_1_ds_1 fffId ssId yjId = {
+    AtomID = "R1AL"; EntityID=jj_1; Version=1; 
+    Information = Description ({Name="Strawberry Jam Jar" ; Certificates=[]});
+    Signatures= [];
+    Sharing=Enabled}
+
+let jj_2_ds_1 fffId ssId yjId = {
+    AtomID = "TAEF"; EntityID=jj_2; Version=1; 
+    Information = Description ({Name="Strawberry Jam Jar" ; Certificates=[]});
+    Signatures= [];
+    Sharing=Enabled}
+
+let jj_3_ds_1 fffId ssId yjId = {
+    AtomID = "0G3T"; EntityID=jj_3; Version=1; 
+    Information = Description ({Name="Strawberry Jam Jar" ; Certificates=[]});
+    Signatures= [];
+    Sharing=Enabled}
+
+let jj_4_ds_1 fffId ssId yjId = {
+    AtomID = "IJ89"; EntityID=jj_4; Version=1; 
+    Information = Description ({Name="Strawberry Jam Jar" ; Certificates=[]});
+    Signatures= [];
+    Sharing=Enabled}
+
+let jj_5_ds_1 fffId ssId yjId = {
+    AtomID = "4BZD"; EntityID=jj_5; Version=1; 
+    Information = Description ({Name="Strawberry Jam Jar" ; Certificates=[]});
     Signatures= [];
     Sharing=Enabled}

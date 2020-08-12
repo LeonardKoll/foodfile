@@ -22,10 +22,9 @@ let main args =
     let entities = config.GetValue<string>("entityindex")
     let members = config.GetValue<string>("memberindex")
     let creationcmd = config.GetValue<string>("indexcreationcmd")
-    
    
     // Re-Create Indices
-    printfn "Resetting Elasticsearch"
+    printfn "Resetting Elasticsearch..."
     ElasticService.RemoveIndices fffElastic entities members
     ElasticService.InitIndices fffElastic entities members creationcmd
     printfn "[ok] FreshFruitFarmers"
@@ -36,18 +35,14 @@ let main args =
     ElasticService.InitIndices yjElastic entities members creationcmd
     printfn "[ok] YummyJam"
     
-
     // Retreive Scenario
-    //config.GetValue<string>("apply")
-    //let scenario = scenario1
-    
     let scenario = (
         typeof<ScenarioLibrary.Scenario>.DeclaringType.GetProperty 
         >> fun propInfo -> 
             propInfo.GetValue(propInfo) 
             :?> ScenarioLibrary.Scenario)(config.GetValue<string>("apply"))
 
-    printfn "Deploying Scenario"
+    printfn "Deploying Scenario..."
 
     // Deploy to FFF
     Utils.getElasticService fffElastic entities members
