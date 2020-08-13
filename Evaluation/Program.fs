@@ -3,6 +3,7 @@
 open System
 open FoodFile
 open Microsoft.Extensions.Configuration
+open Newtonsoft.Json
 
 [<EntryPoint>]
 let main args =
@@ -41,7 +42,8 @@ let main args =
         >> fun propInfo -> 
             propInfo.GetValue(propInfo) 
             :?> ScenarioLibrary.Scenario)(config.GetValue<string>("apply"))
-
+    
+    printfn ""
     printfn "Deploying Scenario..."
 
     // Deploy to FFF
@@ -61,5 +63,13 @@ let main args =
     |> Utils.deployScenarioToMember fffId ssId yjId
     |> fun deployer -> deployer scenario.YummyJam
     printfn "[ok] YummyJam"
+
+    // Print
+    printfn ""
+    printfn "Input for Capture API:"
+    scenario.CapturePrepare
+    |> List.map (fun atomFun -> atomFun fffId ssId yjId)
+    |> JsonConvert.SerializeObject
+    |> printfn "%s"
     
     0

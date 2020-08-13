@@ -102,6 +102,24 @@ let jj_5_cr_1 fffId ssId yjId = {
     Signatures= [];
     Sharing=Enabled}
 
+let ge_1_cr_1 fffId ssId yjId = {
+    AtomID = "IE9R"; EntityID=ge_1; Version=1; 
+    Information = Creation ({   InEntities = []; 
+                                Location = Some({Name=Some("The Chemical Company Facilty"); Coordinates="52.512435, 13.391256"})
+                                Responsible=None
+                                Timestamp = 1568945091L});
+    Signatures= [];
+    Sharing=Enabled}
+
+let ge_1_cr_2 fffId ssId yjId = {
+    AtomID = "IFG2"; EntityID=ge_1; Version=1; 
+    Information = Creation ({   InEntities = []; 
+                                Location = Some({Name=Some("The Chemical Company Facilty"); Coordinates="52.512435, 13.391256"})
+                                Responsible=Some("M3MB3R")
+                                Timestamp = 1568945091L});
+    Signatures= [];
+    Sharing=Enabled}
+
 // Transfer
 
 let st_1_tr_1 fffId ssId yjId = {
@@ -111,7 +129,11 @@ let st_1_tr_1 fffId ssId yjId = {
                             [({Name=Some("FreshFruitFarmers Warehouse"); Coordinates="50.281290, 10.967620"}, 1562227920L)
                         ]});
     Signatures= [];
-    Sharing=ByToken}
+    Sharing=Enabled}
+
+let st_1_tr_3 fffId ssId yjId = {
+    st_1_tr_1 fffId ssId yjId with Sharing=ByToken
+}
 
 let st_1_tr_2 fffId ssId yjId = {
     AtomID = "TTI5"; EntityID=st_1; Version=1;
@@ -210,5 +232,11 @@ let jj_1_iv_1 fffId ssId yjId = {
 let jj_2_iv_1 fffId ssId yjId = {
     AtomID = "M2CK"; EntityID=st_1; Version=1; 
     Information = Involvement ({Member=fffId});
+    Signatures= [];
+    Sharing=Enabled}
+
+let jj_2_iv_2 fffId ssId yjId = {
+    AtomID = "NOID"; EntityID=st_1; Version=1; 
+    Information = Involvement ({Member="M3MB3R"});
     Signatures= [];
     Sharing=Enabled}

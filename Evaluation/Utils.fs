@@ -22,7 +22,7 @@ let assembleEntities (atoms: Atom List) =
     |> List.map (fun (entityID, entityAtoms) -> 
             {ID=entityID; Atoms=entityAtoms}
         )
-
+    
 let deployScenarioToMember (fffId:string) (ssId:string) (yjId:string) (es:IElasticService) (atomFuns:(string -> string -> string -> Atom) List) =
     atomFuns
     |> List.map (fun atomFun -> atomFun fffId ssId yjId)

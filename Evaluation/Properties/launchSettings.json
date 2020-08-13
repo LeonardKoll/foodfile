@@ -2,7 +2,7 @@
   "profiles": {
     "Evaluation": {
       "commandName": "Project",
-      "commandLineArgs": "/apply basic_linked"
+      "commandLineArgs": "/apply token_protected"
     }
   }
 }
