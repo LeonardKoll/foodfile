@@ -2,7 +2,7 @@
   "profiles": {
     "Evaluation": {
       "commandName": "Project",
-      "commandLineArgs": "/apply token_protected"
+      "commandLineArgs": "/apply desired_redundancy"
     }
   }
 }

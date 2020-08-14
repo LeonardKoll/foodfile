@@ -45,6 +45,15 @@ let additional_gellant_info = {
     CapturePrepare =    []
 }
 
+let desired_redundancy = {
+    FreshFruitFarmers = [sb_1_cr_3; st_1_tr_4; st_1_ds_2; ff_1_iv_1]
+    SugarSilo =         []
+    YummyJam =          basic_linked.FreshFruitFarmers
+                        @ basic_linked.SugarSilo
+                        @ basic_linked.YummyJam
+    CapturePrepare =    []
+}
+
 let no_transport = {
     FreshFruitFarmers = [st_1_cr_1; st_1_ds_1]
                         @ [ff_1_iv_1]
@@ -64,7 +73,7 @@ let no_transport = {
 
 let unknown_strawberry_producer = {
     FreshFruitFarmers = basic.FreshFruitFarmers
-                        @ [ff_1_iv_1]   // trawberries
+                        @ [ff_1_iv_1]   // Strawberries
     SugarSilo =         basic.SugarSilo
                         @ [ss_1_iv_1] // Preserving Sugar
     YummyJam =          basic.YummyJam
@@ -78,5 +87,73 @@ let token_protected = {
                         @ [st_1_tr_3]
     SugarSilo =         basic_linked.SugarSilo
     YummyJam =          basic_linked.YummyJam
+    CapturePrepare =    []
+}
+
+let basic_contradiction = {
+    FreshFruitFarmers = basic_linked.FreshFruitFarmers
+                        @ [jj_1_cr_2]   // Wrong (contradicting) atom
+    SugarSilo =         basic_linked.SugarSilo
+                        @ [jj_1_cr_1] // Correct atom
+    YummyJam =          basic_linked.YummyJam // Yj basic already has correct info
+    CapturePrepare =    []
+}
+
+let version_contradiction = {
+    FreshFruitFarmers = basic_contradiction.FreshFruitFarmers
+                        @ [jj_1_cr_3]   // Additional Version of ZSOC wich is aligned
+    SugarSilo =         basic_contradiction.SugarSilo
+                        @ [jj_1_cr_3] 
+    YummyJam =          basic_contradiction.YummyJam
+                        @ [jj_1_cr_3] 
+    CapturePrepare =    []
+}
+
+
+let retrospective_change_before = {
+    FreshFruitFarmers = basic_linked.FreshFruitFarmers
+                        @ basic_linked.SugarSilo
+                        @ basic_linked.YummyJam
+                        @ [ge_1_cr_1; ge_1_cr_2]
+    SugarSilo =         basic_linked.FreshFruitFarmers
+                        @ basic_linked.SugarSilo
+                        @ basic_linked.YummyJam
+                        @ [ge_1_cr_1; ge_1_cr_2]
+    YummyJam =          basic_linked.FreshFruitFarmers
+                        @ basic_linked.SugarSilo
+                        @ basic_linked.YummyJam
+                        @ [ge_1_cr_1; ge_1_cr_2]
+    CapturePrepare =    []
+}
+
+let retrospective_change_after = {
+    FreshFruitFarmers = basic_linked.FreshFruitFarmers
+                        @ basic_linked.SugarSilo
+                        @ basic_linked.YummyJam
+                        @ [ge_1_cr_1; ge_1_cr_2]
+    SugarSilo =         basic_linked.FreshFruitFarmers
+                        @ basic_linked.SugarSilo
+                        @ basic_linked.YummyJam
+                        @ [ge_1_cr_3; ge_1_cr_4] // Modified time compared to retrospective_change_before
+    YummyJam =          basic_linked.FreshFruitFarmers
+                        @ basic_linked.SugarSilo
+                        @ basic_linked.YummyJam
+                        @ [ge_1_cr_1; ge_1_cr_2]
+    CapturePrepare =    []
+}
+
+let retrospective_change_version = {
+    FreshFruitFarmers = basic_linked.FreshFruitFarmers
+                        @ basic_linked.SugarSilo
+                        @ basic_linked.YummyJam
+                        @ [ge_1_cr_1; ge_1_cr_2]
+    SugarSilo =         basic_linked.FreshFruitFarmers
+                        @ basic_linked.SugarSilo
+                        @ basic_linked.YummyJam
+                        @ [ge_1_cr_5] // Modified time now as new version
+    YummyJam =          basic_linked.FreshFruitFarmers
+                        @ basic_linked.SugarSilo
+                        @ basic_linked.YummyJam
+                        @ [ge_1_cr_1; ge_1_cr_2]
     CapturePrepare =    []
 }
