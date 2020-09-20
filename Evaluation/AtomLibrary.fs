@@ -179,10 +179,6 @@ let st_1_tr_1 fffId ssId yjId = {
     Signatures= [];
     Sharing=Enabled}
 
-let st_1_tr_3 fffId ssId yjId = {
-    st_1_tr_1 fffId ssId yjId with Sharing=ByToken
-}
-
 let st_1_tr_2 fffId ssId yjId = {
     AtomID = "TTI5"; EntityID=st_1; Version=1;
     Information = Transfer ({  Responsible=Some(fffId);
@@ -191,6 +187,10 @@ let st_1_tr_2 fffId ssId yjId = {
                         ]});
     Signatures= [];
     Sharing=Enabled}
+
+let st_1_tr_3 fffId ssId yjId = {
+    st_1_tr_1 fffId ssId yjId with Sharing=ByToken
+}
 
 let st_1_tr_4 fffId ssId yjId = {
     st_1_tr_2 fffId ssId yjId with Sharing=Disabled

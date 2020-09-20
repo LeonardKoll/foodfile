@@ -89,7 +89,7 @@ type Atom = {
     // A signature covers everything above. A new signature does not change the Atom version; every other change does.
     Signatures: Signature list;
     Sharing: SharingPolicy;
-}with
+} with
 
     member this.CompleteID =
         this.EntityID + "-" + this.AtomID + "-" + this.Version.ToString();
