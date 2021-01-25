@@ -12,7 +12,7 @@ export function Footer({mode, memberID, memberName})
                         <p>
                             <a href="/legal">References &amp; Legal</a>
                             <br></br>  
-                            © 2020 by <a href="https://linkedin.com/in/leonardkoll">Leonard Koll</a>            
+                            © <a href="https://linkedin.com/in/leonardkoll">Leonard Koll</a>            
                         </p>
                     </div>
                     <div className="col-sm">
