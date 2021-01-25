@@ -50,8 +50,9 @@ export function Home ()
             to deploy and scale on-site, cloud-based or even hybrid.
             FoodFile is built on the belief that blockchain is not an appropriate basis 
             for recordkeeping related to physical goods. You are invited to
-            read the whitepaper (following soon) for a fundamental reasoning or check
-            out <a href="https://www.mckinsey.com/business-functions/mckinsey-digital/our-insights/blockchain-beyond-the-hype-what-is-the-strategic-business-value">this article by McKinsey</a>.
+            <a href="thesis_whitepaper.pdf">read the whitepaper</a>
+            for a fundamental reasoning or check out
+            <a href="https://www.mckinsey.com/business-functions/mckinsey-digital/our-insights/blockchain-beyond-the-hype-what-is-the-strategic-business-value">this article by McKinsey</a>.
             </p>
           </div>
         </div>
