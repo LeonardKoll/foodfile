@@ -49,10 +49,8 @@ export function Home ()
             technologies such as Elasticsearch, Net Core and Docker. It is easy
             to deploy and scale on-site, cloud-based or even hybrid.
             FoodFile is built on the belief that blockchain is not an appropriate basis 
-            for recordkeeping related to physical goods. You are invited to
-            <a href="thesis_whitepaper.pdf">read the whitepaper</a>
-            for a fundamental reasoning or check out
-            <a href="https://www.mckinsey.com/business-functions/mckinsey-digital/our-insights/blockchain-beyond-the-hype-what-is-the-strategic-business-value">this article by McKinsey</a>.
+            for recordkeeping related to physical goods. You are invited to <a href="thesis_whitepaper.pdf">read the whitepaper</a> for a fundamental reasoning or check 
+            out <a href="https://www.mckinsey.com/business-functions/mckinsey-digital/our-insights/blockchain-beyond-the-hype-what-is-the-strategic-business-value">this article by McKinsey</a>.
             </p>
           </div>
         </div>
