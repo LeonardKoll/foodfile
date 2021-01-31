@@ -20,7 +20,8 @@ function newHierarchyItem (type, id, name, member, location, time)
 function getPreparedAtoms (entities, rootID)
 {
     var atoms = null
-    for (var i=0; i<entities.length; i++)
+    var i = 0
+    for (i=0; i<entities.length; i++)
     {
         if (entities[i].ID === rootID)
         {
@@ -36,7 +37,7 @@ function getPreparedAtoms (entities, rootID)
     atoms.sort(function(atomA, atomB){return atomB.Version - atomA.Version});
 
     // Remove Deleted
-    i=0
+    i = 0
     while (i<atoms.length)
     {
         if (atoms[i].Information.Case === "Deleted")
