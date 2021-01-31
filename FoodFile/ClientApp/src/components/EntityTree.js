@@ -36,7 +36,7 @@ function getPreparedAtoms (entities, rootID)
     atoms.sort(function(atomA, atomB){return atomB.Version - atomA.Version});
 
     // Remove Deleted
-    var i=0
+    i=0
     while (i<atoms.length)
     {
         if (atoms[i].Information.Case === "Deleted")
@@ -287,7 +287,7 @@ function EntityTree({direction, entities, members, rootID})
 
         if (entities.length>0)
             placeTreeSVG(direction, entities, members, rootID, containerRef.current);  
-        
+            // eslint-disable-next-line react-hooks/exhaustive-deps
         }, [entities.length,members.length]);
         /*
             If you pass an object, React will store only the reference to the object and run the effect when the reference changes,
